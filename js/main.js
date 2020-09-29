@@ -1,6 +1,6 @@
 'use strict';
 
-const OfferData = {
+const OFFERDATA = {
   TITLES: [
     'Приют для потереных душ',
     'Дом на улице Вязов',
@@ -71,71 +71,74 @@ const OfferData = {
       MIN: 130,
       MAX: 630
     }
+  },
+  COORDINATES: {
+    X: 600,
+    Y: 350
   }
 };
 
-let PIN = {
-  WIDTH: 50,
-  HEIGHT: 70
-};
-
-let adsArrey = [];
 let template = document.querySelector('#pin');
 let map = document.querySelector('.map');
 let mapPins = document.querySelector('.map__pins');
 let mapPinTemplate = template.content.querySelector('.map__pin');
 
+const PIN = {
+  WIDTH: 50,
+  HEIGHT: 70
+};
+
+
 const getRandomNumber = (max, min) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const getShuffleArray = (arrey) => {
-  let copyArrey = arrey.slice(0);
-  for (let i = 1; i < copyArrey.length; i++) {
+const getShuffleArray = (array) => {
+  let copyArray = array.slice(0);
+  for (let i = 0; i < copyArray.length; i++) {
     let j = Math.floor(Math.random() * (i - 1));
-    let temp = copyArrey[i];
-    copyArrey[i] = copyArrey[j];
-    copyArrey[j] = temp;
+    let temp = copyArray[i];
+    copyArray[i] = copyArray[j];
+    copyArray[j] = temp;
   }
-  return copyArrey;
+  return copyArray;
 };
 
-const getRandomLengthArr = (arrey) => {
-  let copyArrey = arrey.slice(0);
-  let length = getRandomNumber(0, copyArrey.length);
-  copyArrey.slice(0, length);
-  return copyArrey;
+const getRandomLengthArr = (array) => {
+  let copyArray = array.slice(0);
+  let length = getRandomNumber(0, copyArray.length);
+  copyArray.slice(0, length);
+  return copyArray;
 };
 
-const createAdObject = (i) => {
-  let adObject = {
-    autor: {
-      avatar: `img/avatars/user${i < 10 ? '0' : ''}${i + 1}.png`,
-    },
-    offer: {
-      title: OfferData.TITLES[i],
-      price: getRandomNumber(OfferData.PRICE.MIN, OfferData.PRICE.MAX),
-      type: OfferData.TYPES[getRandomNumber(0, OfferData.TYPES.length - 1)],
-      rooms: getRandomNumber(OfferData.ROOMS.MAX, OfferData.ROOMS.MIN),
-      guests: getRandomNumber(OfferData.GUESTS.MIN, OfferData.GUESTS.MAX),
-      checkin: OfferData.CHECKIN[getRandomNumber(0, OfferData.CHECKIN.length - 1)],
-      checkout: OfferData.CHECKOUT[getRandomNumber(0, OfferData.CHECKOUT.length - 1)],
-      features: getRandomLengthArr(getShuffleArray(OfferData.FEATURES)),
-      description: OfferData.DESCRIPTIOS[i],
-      photos: getRandomLengthArr(getShuffleArray(OfferData.PHOTOS))
-    },
-    location: {
-      x: getRandomNumber(OfferData.LOCATION.X.MIN, OfferData.LOCATION.X.MAX) - PIN.WIDTH / 2,
-      y: getRandomNumber(OfferData.LOCATION.Y.MIN, OfferData.LOCATION.Y.MAX) - PIN.HEIGHT
-    }
-  };
-  adObject.offer.address = `${adObject.location.x}, ${adObject.location.y}`;
-  return adObject;
+const createAdObject = () => {
+  let adsArray = [];
+  for (let i = 0; i < 8; i++) {
+    adsArray.push({
+      autor: {
+        avatar: `img/avatars/user${i < 10 ? '0' : ''}${i + 1}.png`,
+      },
+      offer: {
+        title: OFFERDATA.TITLES[i],
+        price: getRandomNumber(OFFERDATA.PRICE.MIN, OFFERDATA.PRICE.MAX),
+        type: OFFERDATA.TYPES[getRandomNumber(0, OFFERDATA.TYPES.length - 1)],
+        rooms: getRandomNumber(OFFERDATA.ROOMS.MAX, OFFERDATA.ROOMS.MIN),
+        guests: getRandomNumber(OFFERDATA.GUESTS.MIN, OFFERDATA.GUESTS.MAX),
+        checkin: OFFERDATA.CHECKIN[getRandomNumber(0, OFFERDATA.CHECKIN.length - 1)],
+        checkout: OFFERDATA.CHECKOUT[getRandomNumber(0, OFFERDATA.CHECKOUT.length - 1)],
+        features: getRandomLengthArr(getShuffleArray(OFFERDATA.FEATURES)),
+        description: OFFERDATA.DESCRIPTIOS[i],
+        photos: getRandomLengthArr(getShuffleArray(OFFERDATA.PHOTOS))
+      },
+      location: {
+        x: getRandomNumber(OFFERDATA.LOCATION.X.MIN, OFFERDATA.LOCATION.X.MAX) - PIN.WIDTH / 2,
+        y: getRandomNumber(OFFERDATA.LOCATION.Y.MIN, OFFERDATA.LOCATION.Y.MAX) - PIN.HEIGHT
+      },
+      address: `${OFFERDATA.COORDINATES.X}, ${OFFERDATA.COORDINATES.Y}`
+    });
+  }
+  return adsArray;
 };
-
-for (let k = 0; k < 8; k++) {
-  adsArrey[k] = createAdObject(k);
-}
 
 map.classList.remove('map--faded');
 
@@ -157,4 +160,4 @@ const renderPinsMarkup = (pinsData) => {
   mapPins.appendChild(pinFragment);
 };
 
-renderPinsMarkup(adsArrey);
+renderPinsMarkup(createAdObject());
