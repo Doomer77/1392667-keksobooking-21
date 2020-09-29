@@ -78,16 +78,15 @@ const OFFERDATA = {
   }
 };
 
-let template = document.querySelector('#pin');
-let map = document.querySelector('.map');
-let mapPins = document.querySelector('.map__pins');
-let mapPinTemplate = template.content.querySelector('.map__pin');
-
 const PIN = {
   WIDTH: 50,
   HEIGHT: 70
 };
 
+let template = document.querySelector('#pin');
+let map = document.querySelector('.map');
+let mapPins = document.querySelector('.map__pins');
+let mapPinTemplate = template.content.querySelector('.map__pin');
 
 const getRandomNumber = (max, min) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -131,8 +130,8 @@ const createAdObject = () => {
         photos: getRandomLengthArr(getShuffleArray(OFFERDATA.PHOTOS))
       },
       location: {
-        x: getRandomNumber(OFFERDATA.LOCATION.X.MIN, OFFERDATA.LOCATION.X.MAX) - PIN.WIDTH / 2,
-        y: getRandomNumber(OFFERDATA.LOCATION.Y.MIN, OFFERDATA.LOCATION.Y.MAX) - PIN.HEIGHT
+        x: getRandomNumber(OFFERDATA.LOCATION.X.MIN, OFFERDATA.LOCATION.X.MAX),
+        y: getRandomNumber(OFFERDATA.LOCATION.Y.MIN, OFFERDATA.LOCATION.Y.MAX)
       },
       address: `${OFFERDATA.COORDINATES.X}, ${OFFERDATA.COORDINATES.Y}`
     });
@@ -147,8 +146,8 @@ const createPinMarkup = (pinData) => {
   let pinImgAtr = pin.querySelector('img');
   pinImgAtr.src = pinData.autor.avatar;
   pinImgAtr.alt = pinData.offer.title;
-  pin.style.left = `${pinData.location.x}px`;
-  pin.style.top = `${pinData.location.y}px`;
+  pin.style.left = `${pinData.location.x  - PIN.WIDTH / 2}px`;
+  pin.style.top = `${pinData.location.y - PIN.HEIGHT}px`;
   return pin;
 };
 
