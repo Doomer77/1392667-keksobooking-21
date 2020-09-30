@@ -80,23 +80,26 @@ const OFFER_DATA = {
   }
 };
 
+const TYPESMAP = {
+  PALACE: 'Дворец',
+  FLAT: 'Квартира',
+  HOUSE: 'Дом',
+  BUNGALO: 'Бунгало'
+}
+
 const PIN = {
   WIDTH: 50,
   HEIGHT: 70
 };
 
-const monipulateElementDOM = (element, removeClass) => {
-  const result = document.querySelector(element);
-  if (removeClass) {
-    return result.classList.remove(removeClass);
-  }
-  return result;
-};
-
-monipulateElementDOM('.map');
-let template = monipulateElementDOM('#pin');
-let mapPins = monipulateElementDOM('.map__pins');
-let mapPinTemplate = template.content.querySelector('.map__pin');
+let map = document.querySelector('.map');
+let mapPins = document.querySelector('.map__pins');
+let templatePin = document.querySelector('#pin');
+let mapPinTemplate = templatePin.content.querySelector('.map__pin');
+let templateCard = document.querySelector('#card');
+let mapCard = templateCard.content.querySelector('.map__card');
+let popupPhoto = templateCard.content.querySelector('.popup__photo');
+let mapFiltersContainer = document.querySelector('.map__filters-container');
 
 const getRandomNumber = (max, min) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -104,8 +107,8 @@ const getRandomNumber = (max, min) => {
 
 const getShuffleArray = (array) => {
   let copyArray = array.slice(0);
-  for (let i = 0; i < copyArray.length; i++) {
-    let j = Math.floor(Math.random() * (i - 1));
+  for (let i = copyArray.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
     let temp = copyArray[i];
     copyArray[i] = copyArray[j];
     copyArray[j] = temp;
@@ -149,6 +152,10 @@ const createAdObject = () => {
   return adsArray;
 };
 
+let getAdsArray = createAdObject();
+
+map.classList.remove('map--faded');
+
 const createPinMarkup = (pinData) => {
   let pin = mapPinTemplate.cloneNode(true);
   let pinImgAtr = pin.querySelector('img');
@@ -169,22 +176,41 @@ const renderPinsMarkup = (pinsData) => {
 
 renderPinsMarkup(createAdObject());
 
-const createListFeatures = (dataAd) => {
-  let featureFragment = createDocumentFragment();
-  for (let f = 0; f < dataAd.length; f++) {
+const createFeatureFragment = (dataAd) => {
+  let featureFragment = document.createDocumentFragment();
+  for (let f = 0; f < dataAd.offer.features.length; f++) {
     let featureItem = document.createElement('li');
-    featureItem.classList.add(`popup__feature popup__feature--${dataAdd.OFFERDATA.FEATURES[f]}`);
+    featureItem.className = `popup__feature popup__feature--${dataAd.offer.features[f]}`;
     featureFragment.appendChild(featureItem);
   }
   return featureFragment;
 };
 
-const createListPhotos = (dataAd) => {
-  let photoFragment = document.createDocumentFragment();
-  for (let p = 0; p < dataAd.length; p++) {
-    let photoItem = document.cloneNode(true);
-    photoItem.src = dataAdd.OFFERDATA.PHOTOS[p];
-    photoFragment.appendChild(photoItem);
+const createPhotosFragment = (dataAd) => {
+  let photosFragment = document.createDocumentFragment();
+  for (let ph = 0; ph < dataAd.offer.photos.length; ph++) {
+    let popupPhotoItem = popupPhoto.cloneNode(true);
+    popupPhotoItem.src = dataAd.offer.photos[ph];
+    photosFragment.appendChild(popupPhotoItem);
   }
-  return photoFragment;
+  return photosFragment;
 };
+
+const createAd = (dataAd) => {
+  let ad = mapCard.cloneNode(true);
+  ad.querySelector('.popup__title').textContent = dataAd.offer.title;
+  ad.querySelector('.popup__text--address').textContent = dataAd.address;
+  ad.querySelector('.popup__text--price').textContent = `${dataAd.offer.price}₽/ночь`;
+  ad.querySelector('.popup__type').textContent = TYPESMAP[dataAd.offer.type];
+  ad.querySelector('.popup__text--capacity').textContent = `${dataAd.offer.rooms} комнаты для ${dataAd.offer.guests} гостей`;
+  ad.querySelector('.popup__text--time').textContent = `Заезд после ${dataAd.offer.checkin}, выезд до ${dataAd.offer.checkout}`;
+  ad.querySelector('.popup__features').innerHTML = '';
+  ad.querySelector('.popup__features').appendChild(createFeatureFragment(dataAd));
+  ad.querySelector('.popup__description').textContent = dataAd.offer.description;
+  ad.querySelector('.popup__photos').removeChild(ad.querySelector('.popup__photo'));
+  ad.querySelector('.popup__photos').appendChild(createPhotosFragment(dataAd));
+  ad.querySelector('.map__card .popup__avatar').src = dataAd.autor.avatar;
+  return ad;
+};
+
+mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(getAdsArray[0]));
