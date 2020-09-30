@@ -85,7 +85,7 @@ const TYPESMAP = {
   FLAT: 'Квартира',
   HOUSE: 'Дом',
   BUNGALO: 'Бунгало'
-}
+};
 
 const PIN = {
   WIDTH: 50,
