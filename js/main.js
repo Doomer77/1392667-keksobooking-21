@@ -146,7 +146,7 @@ const createPinMarkup = (pinData) => {
   let pinImgAtr = pin.querySelector('img');
   pinImgAtr.src = pinData.autor.avatar;
   pinImgAtr.alt = pinData.offer.title;
-  pin.style.left = `${pinData.location.x  - PIN.WIDTH / 2}px`;
+  pin.style.left = `${pinData.location.x - PIN.WIDTH / 2}px`;
   pin.style.top = `${pinData.location.y - PIN.HEIGHT}px`;
   return pin;
 };
