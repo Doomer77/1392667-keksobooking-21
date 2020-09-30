@@ -168,3 +168,13 @@ const renderPinsMarkup = (pinsData) => {
 };
 
 renderPinsMarkup(createAdObject());
+
+const createListFeatures = (dataAd) => {
+  let featureFragment = createDocumentFragment();
+  for (let f = 0; f < dataAd.length; f++) {
+    let featureItem = document.createElement('li');
+    featureItem.classList.add(`popup__feature popup__feature--${dataAdd.OFFERDATA.FEATURES[f]}`);
+    featureFragment.appendChild(featureItem);
+  }
+  return featureFragment;
+};
