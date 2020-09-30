@@ -178,3 +178,13 @@ const createListFeatures = (dataAd) => {
   }
   return featureFragment;
 };
+
+const createListPhotos = (dataAd) => {
+  let photoFragment = document.createDocumentFragment();
+  for (let p = 0; p < dataAd.length; p++) {
+    let photoItem = document.cloneNode(true);
+    photoItem.src = dataAdd.OFFERDATA.PHOTOS[p];
+    photoFragment.appendChild(photoItem);
+  }
+  return photoFragment;
+};
