@@ -80,7 +80,7 @@ const OFFER_DATA = {
   }
 };
 
-const TYPESMAP = {
+const TYPES_MAP = {
   PALACE: 'Дворец',
   FLAT: 'Квартира',
   HOUSE: 'Дом',
@@ -92,14 +92,23 @@ const PIN = {
   HEIGHT: 70
 };
 
-let map = document.querySelector('.map');
-let mapPins = document.querySelector('.map__pins');
-let templatePin = document.querySelector('#pin');
-let mapPinTemplate = templatePin.content.querySelector('.map__pin');
-let templateCard = document.querySelector('#card');
-let mapCard = templateCard.content.querySelector('.map__card');
-let popupPhoto = templateCard.content.querySelector('.popup__photo');
-let mapFiltersContainer = document.querySelector('.map__filters-container');
+const monipulateElementDOM = (element, removeClass) => {
+  const result = document.querySelector(element);
+  if (removeClass) {
+    return result.classList.remove(removeClass);
+  }
+  return result;
+};
+
+monipulateElementDOM('.map', 'hidden');
+const mapPins = monipulateElementDOM('.map__pins');
+const mapFiltersContainer = monipulateElementDOM('.map__filters-container');
+const templatePin = monipulateElementDOM('#pin');
+const templateCard = monipulateElementDOM('#card');
+const mapPinTemplate = templatePin.content.querySelector('.map__pin');
+const mapCard = templateCard.content.querySelector('.map__card');
+const popupPhoto = templateCard.content.querySelector('.popup__photo');
+
 
 const getRandomNumber = (max, min) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -154,8 +163,6 @@ const createAdObject = () => {
 
 let getAdsArray = createAdObject();
 
-map.classList.remove('map--faded');
-
 const createPinMarkup = (pinData) => {
   let pin = mapPinTemplate.cloneNode(true);
   let pinImgAtr = pin.querySelector('img');
@@ -201,7 +208,7 @@ const createAd = (dataAd) => {
   ad.querySelector('.popup__title').textContent = dataAd.offer.title;
   ad.querySelector('.popup__text--address').textContent = dataAd.address;
   ad.querySelector('.popup__text--price').textContent = `${dataAd.offer.price}₽/ночь`;
-  ad.querySelector('.popup__type').textContent = TYPESMAP[dataAd.offer.type];
+  ad.querySelector('.popup__type').textContent = TYPES_MAP[dataAd.offer.type];
   ad.querySelector('.popup__text--capacity').textContent = `${dataAd.offer.rooms} комнаты для ${dataAd.offer.guests} гостей`;
   ad.querySelector('.popup__text--time').textContent = `Заезд после ${dataAd.offer.checkin}, выезд до ${dataAd.offer.checkout}`;
   ad.querySelector('.popup__features').innerHTML = '';
