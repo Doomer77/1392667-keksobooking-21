@@ -1,6 +1,8 @@
 'use strict';
 
-const OFFERDATA = {
+const AD_COUNT = 8;
+
+const OFFER_DATA = {
   TITLES: [
     'Приют для потереных душ',
     'Дом на улице Вязов',
@@ -83,9 +85,17 @@ const PIN = {
   HEIGHT: 70
 };
 
-let template = document.querySelector('#pin');
-let map = document.querySelector('.map');
-let mapPins = document.querySelector('.map__pins');
+const monipulateElementDOM = (element, removeClass) => {
+  const result = document.querySelector(element);
+  if (removeClass) {
+    return result.classList.remove(removeClass);
+  }
+  return result;
+};
+
+monipulateElementDOM('.map');
+let template = monipulateElementDOM('#pin');
+let mapPins = monipulateElementDOM('.map__pins');
 let mapPinTemplate = template.content.querySelector('.map__pin');
 
 const getRandomNumber = (max, min) => {
@@ -112,34 +122,32 @@ const getRandomLengthArr = (array) => {
 
 const createAdObject = () => {
   let adsArray = [];
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < AD_COUNT; i++) {
     adsArray.push({
       autor: {
-        avatar: `img/avatars/user${i < 10 ? '0' : ''}${i + 1}.png`,
+        avatar: `img/avatars/user${i < AD_COUNT ? '0' : ''}${i + 1}.png`,
       },
       offer: {
-        title: OFFERDATA.TITLES[i],
-        price: getRandomNumber(OFFERDATA.PRICE.MIN, OFFERDATA.PRICE.MAX),
-        type: OFFERDATA.TYPES[getRandomNumber(0, OFFERDATA.TYPES.length - 1)],
-        rooms: getRandomNumber(OFFERDATA.ROOMS.MAX, OFFERDATA.ROOMS.MIN),
-        guests: getRandomNumber(OFFERDATA.GUESTS.MIN, OFFERDATA.GUESTS.MAX),
-        checkin: OFFERDATA.CHECKIN[getRandomNumber(0, OFFERDATA.CHECKIN.length - 1)],
-        checkout: OFFERDATA.CHECKOUT[getRandomNumber(0, OFFERDATA.CHECKOUT.length - 1)],
-        features: getRandomLengthArr(getShuffleArray(OFFERDATA.FEATURES)),
-        description: OFFERDATA.DESCRIPTIOS[i],
-        photos: getRandomLengthArr(getShuffleArray(OFFERDATA.PHOTOS))
+        title: OFFER_DATA.TITLES[i],
+        price: getRandomNumber(OFFER_DATA.PRICE.MIN, OFFER_DATA.PRICE.MAX),
+        type: OFFER_DATA.TYPES[getRandomNumber(0, OFFER_DATA.TYPES.length - 1)],
+        rooms: getRandomNumber(OFFER_DATA.ROOMS.MAX, OFFER_DATA.ROOMS.MIN),
+        guests: getRandomNumber(OFFER_DATA.GUESTS.MIN, OFFER_DATA.GUESTS.MAX),
+        checkin: OFFER_DATA.CHECKIN[getRandomNumber(0, OFFER_DATA.CHECKIN.length - 1)],
+        checkout: OFFER_DATA.CHECKOUT[getRandomNumber(0, OFFER_DATA.CHECKOUT.length - 1)],
+        features: getRandomLengthArr(getShuffleArray(OFFER_DATA.FEATURES)),
+        description: OFFER_DATA.DESCRIPTIOS[i],
+        photos: getRandomLengthArr(getShuffleArray(OFFER_DATA.PHOTOS))
       },
       location: {
-        x: getRandomNumber(OFFERDATA.LOCATION.X.MIN, OFFERDATA.LOCATION.X.MAX),
-        y: getRandomNumber(OFFERDATA.LOCATION.Y.MIN, OFFERDATA.LOCATION.Y.MAX)
+        x: getRandomNumber(OFFER_DATA.LOCATION.X.MIN, OFFER_DATA.LOCATION.X.MAX),
+        y: getRandomNumber(OFFER_DATA.LOCATION.Y.MIN, OFFER_DATA.LOCATION.Y.MAX)
       },
-      address: `${OFFERDATA.COORDINATES.X}, ${OFFERDATA.COORDINATES.Y}`
+      address: `${OFFER_DATA.COORDINATES.X}, ${OFFER_DATA.COORDINATES.Y}`
     });
   }
   return adsArray;
 };
-
-map.classList.remove('map--faded');
 
 const createPinMarkup = (pinData) => {
   let pin = mapPinTemplate.cloneNode(true);
