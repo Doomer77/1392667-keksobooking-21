@@ -100,7 +100,7 @@ const monipulateElementDOM = (element, removeClass) => {
   return result;
 };
 
-monipulateElementDOM('.map', 'hidden');
+monipulateElementDOM('.map', 'map--faded');
 const mapPins = monipulateElementDOM('.map__pins');
 const mapFiltersContainer = monipulateElementDOM('.map__filters-container');
 const templatePin = monipulateElementDOM('#pin');
