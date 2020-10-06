@@ -116,7 +116,7 @@ const getRandomNumber = (max, min) => {
 
 const getShuffleArray = (array) => {
   let copyArray = array.slice(0);
-  for (let i = copyArray.length - 1; i > 0; i--) {
+  for (let i = 0; i < copyArray.length; i++) {
     let j = Math.floor(Math.random() * (i + 1));
     let temp = copyArray[i];
     copyArray[i] = copyArray[j];
@@ -127,9 +127,9 @@ const getShuffleArray = (array) => {
 
 const getRandomLengthArr = (array) => {
   let copyArray = array.slice(0);
-  let length = getRandomNumber(0, copyArray.length);
-  copyArray.slice(0, length);
-  return copyArray;
+  let length = getRandomNumber(0, copyArray.length + 1);
+  let copy = copyArray.slice(0, length);
+  return copy;
 };
 
 const createAdObject = () => {
@@ -140,15 +140,15 @@ const createAdObject = () => {
         avatar: `img/avatars/user${i < AD_COUNT ? '0' : ''}${i + 1}.png`,
       },
       offer: {
-        title: OFFER_DATA.TITLES[i],
+        title: OFFER_DATA.TITLES[getRandomNumber(OFFER_DATA.TITLES.length - 1, 0)],
         price: getRandomNumber(OFFER_DATA.PRICE.MIN, OFFER_DATA.PRICE.MAX),
-        type: OFFER_DATA.TYPES[getRandomNumber(0, OFFER_DATA.TYPES.length - 1)],
+        type: OFFER_DATA.TYPES[getRandomNumber(OFFER_DATA.TYPES.length - 1, 0)],
         rooms: getRandomNumber(OFFER_DATA.ROOMS.MAX, OFFER_DATA.ROOMS.MIN),
         guests: getRandomNumber(OFFER_DATA.GUESTS.MIN, OFFER_DATA.GUESTS.MAX),
-        checkin: OFFER_DATA.CHECKIN[getRandomNumber(0, OFFER_DATA.CHECKIN.length - 1)],
-        checkout: OFFER_DATA.CHECKOUT[getRandomNumber(0, OFFER_DATA.CHECKOUT.length - 1)],
+        checkin: OFFER_DATA.CHECKIN[getRandomNumber(OFFER_DATA.CHECKIN.length - 1, 0)],
+        checkout: OFFER_DATA.CHECKOUT[getRandomNumber(OFFER_DATA.CHECKOUT.length - 1, 0)],
         features: getRandomLengthArr(getShuffleArray(OFFER_DATA.FEATURES)),
-        description: OFFER_DATA.DESCRIPTIOS[i],
+        description: OFFER_DATA.DESCRIPTIOS[getRandomNumber(OFFER_DATA.DESCRIPTIOS.length - 1, 0)],
         photos: getRandomLengthArr(getShuffleArray(OFFER_DATA.PHOTOS))
       },
       location: {
