@@ -80,6 +80,13 @@ const OFFER_DATA = {
   }
 };
 
+const TYPES_MAP = {
+  PALACE: 'Дворец',
+  FLAT: 'Квартира',
+  HOUSE: 'Дом',
+  BUNGALO: 'Бунгало'
+};
+
 const PIN = {
   WIDTH: 50,
   HEIGHT: 70
@@ -93,10 +100,15 @@ const monipulateElementDOM = (element, removeClass) => {
   return result;
 };
 
-monipulateElementDOM('.map');
-let template = monipulateElementDOM('#pin');
-let mapPins = monipulateElementDOM('.map__pins');
-let mapPinTemplate = template.content.querySelector('.map__pin');
+monipulateElementDOM('.map', 'map--faded');
+const mapPins = monipulateElementDOM('.map__pins');
+const mapFiltersContainer = monipulateElementDOM('.map__filters-container');
+const templatePin = monipulateElementDOM('#pin');
+const templateCard = monipulateElementDOM('#card');
+const mapPinTemplate = templatePin.content.querySelector('.map__pin');
+const mapCard = templateCard.content.querySelector('.map__card');
+const popupPhoto = templateCard.content.querySelector('.popup__photo');
+
 
 const getRandomNumber = (max, min) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -105,7 +117,7 @@ const getRandomNumber = (max, min) => {
 const getShuffleArray = (array) => {
   let copyArray = array.slice(0);
   for (let i = 0; i < copyArray.length; i++) {
-    let j = Math.floor(Math.random() * (i - 1));
+    let j = Math.floor(Math.random() * (i + 1));
     let temp = copyArray[i];
     copyArray[i] = copyArray[j];
     copyArray[j] = temp;
@@ -115,9 +127,9 @@ const getShuffleArray = (array) => {
 
 const getRandomLengthArr = (array) => {
   let copyArray = array.slice(0);
-  let length = getRandomNumber(0, copyArray.length);
-  copyArray.slice(0, length);
-  return copyArray;
+  let length = getRandomNumber(0, copyArray.length + 1);
+  let copy = copyArray.slice(0, length);
+  return copy;
 };
 
 const createAdObject = () => {
@@ -128,15 +140,15 @@ const createAdObject = () => {
         avatar: `img/avatars/user${i < AD_COUNT ? '0' : ''}${i + 1}.png`,
       },
       offer: {
-        title: OFFER_DATA.TITLES[i],
+        title: OFFER_DATA.TITLES[getRandomNumber(OFFER_DATA.TITLES.length - 1, 0)],
         price: getRandomNumber(OFFER_DATA.PRICE.MIN, OFFER_DATA.PRICE.MAX),
-        type: OFFER_DATA.TYPES[getRandomNumber(0, OFFER_DATA.TYPES.length - 1)],
+        type: OFFER_DATA.TYPES[getRandomNumber(OFFER_DATA.TYPES.length - 1, 0)],
         rooms: getRandomNumber(OFFER_DATA.ROOMS.MAX, OFFER_DATA.ROOMS.MIN),
         guests: getRandomNumber(OFFER_DATA.GUESTS.MIN, OFFER_DATA.GUESTS.MAX),
-        checkin: OFFER_DATA.CHECKIN[getRandomNumber(0, OFFER_DATA.CHECKIN.length - 1)],
-        checkout: OFFER_DATA.CHECKOUT[getRandomNumber(0, OFFER_DATA.CHECKOUT.length - 1)],
+        checkin: OFFER_DATA.CHECKIN[getRandomNumber(OFFER_DATA.CHECKIN.length - 1, 0)],
+        checkout: OFFER_DATA.CHECKOUT[getRandomNumber(OFFER_DATA.CHECKOUT.length - 1, 0)],
         features: getRandomLengthArr(getShuffleArray(OFFER_DATA.FEATURES)),
-        description: OFFER_DATA.DESCRIPTIOS[i],
+        description: OFFER_DATA.DESCRIPTIOS[getRandomNumber(OFFER_DATA.DESCRIPTIOS.length - 1, 0)],
         photos: getRandomLengthArr(getShuffleArray(OFFER_DATA.PHOTOS))
       },
       location: {
@@ -148,6 +160,8 @@ const createAdObject = () => {
   }
   return adsArray;
 };
+
+let getAdsArray = createAdObject();
 
 const createPinMarkup = (pinData) => {
   let pin = mapPinTemplate.cloneNode(true);
@@ -168,3 +182,42 @@ const renderPinsMarkup = (pinsData) => {
 };
 
 renderPinsMarkup(createAdObject());
+
+const createFeatureFragment = (features) => {
+  let featureFragment = document.createDocumentFragment();
+  for (let f = 0; f < features.length; f++) {
+    let featureItem = document.createElement('li');
+    featureItem.className = `popup__feature popup__feature--${features[f]}`;
+    featureFragment.appendChild(featureItem);
+  }
+  return featureFragment;
+};
+
+const createPhotosFragment = (photos) => {
+  let photosFragment = document.createDocumentFragment();
+  for (let ph = 0; ph < photos.length; ph++) {
+    let popupPhotoItem = popupPhoto.cloneNode(true);
+    popupPhotoItem.src = photos[ph];
+    photosFragment.appendChild(popupPhotoItem);
+  }
+  return photosFragment;
+};
+
+const createAd = (dataAd) => {
+  let ad = mapCard.cloneNode(true);
+  ad.querySelector('.popup__title').textContent = dataAd.offer.title;
+  ad.querySelector('.popup__text--address').textContent = dataAd.address;
+  ad.querySelector('.popup__text--price').textContent = `${dataAd.offer.price}₽/ночь`;
+  ad.querySelector('.popup__type').textContent = TYPES_MAP[dataAd.offer.type];
+  ad.querySelector('.popup__text--capacity').textContent = `${dataAd.offer.rooms} комнаты для ${dataAd.offer.guests} гостей`;
+  ad.querySelector('.popup__text--time').textContent = `Заезд после ${dataAd.offer.checkin}, выезд до ${dataAd.offer.checkout}`;
+  ad.querySelector('.popup__features').innerHTML = '';
+  ad.querySelector('.popup__features').appendChild(createFeatureFragment(dataAd.offer.features));
+  ad.querySelector('.popup__description').textContent = dataAd.offer.description;
+  ad.querySelector('.popup__photos').removeChild(ad.querySelector('.popup__photo'));
+  ad.querySelector('.popup__photos').appendChild(createPhotosFragment(dataAd.offer.photos));
+  ad.querySelector('.map__card .popup__avatar').src = dataAd.autor.avatar;
+  return ad;
+};
+
+mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(getAdsArray[0]));
