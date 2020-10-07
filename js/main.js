@@ -183,21 +183,21 @@ const renderPinsMarkup = (pinsData) => {
 
 renderPinsMarkup(createAdObject());
 
-const createFeatureFragment = (dataAd) => {
+const createFeatureFragment = (features) => {
   let featureFragment = document.createDocumentFragment();
-  for (let f = 0; f < dataAd.offer.features.length; f++) {
+  for (let f = 0; f < features.length; f++) {
     let featureItem = document.createElement('li');
-    featureItem.className = `popup__feature popup__feature--${dataAd.offer.features[f]}`;
+    featureItem.className = `popup__feature popup__feature--${features[f]}`;
     featureFragment.appendChild(featureItem);
   }
   return featureFragment;
 };
 
-const createPhotosFragment = (dataAd) => {
+const createPhotosFragment = (photos) => {
   let photosFragment = document.createDocumentFragment();
-  for (let ph = 0; ph < dataAd.offer.photos.length; ph++) {
+  for (let ph = 0; ph < photos.length; ph++) {
     let popupPhotoItem = popupPhoto.cloneNode(true);
-    popupPhotoItem.src = dataAd.offer.photos[ph];
+    popupPhotoItem.src = photos[ph];
     photosFragment.appendChild(popupPhotoItem);
   }
   return photosFragment;
@@ -212,10 +212,10 @@ const createAd = (dataAd) => {
   ad.querySelector('.popup__text--capacity').textContent = `${dataAd.offer.rooms} комнаты для ${dataAd.offer.guests} гостей`;
   ad.querySelector('.popup__text--time').textContent = `Заезд после ${dataAd.offer.checkin}, выезд до ${dataAd.offer.checkout}`;
   ad.querySelector('.popup__features').innerHTML = '';
-  ad.querySelector('.popup__features').appendChild(createFeatureFragment(dataAd));
+  ad.querySelector('.popup__features').appendChild(createFeatureFragment(dataAd.offer.features));
   ad.querySelector('.popup__description').textContent = dataAd.offer.description;
   ad.querySelector('.popup__photos').removeChild(ad.querySelector('.popup__photo'));
-  ad.querySelector('.popup__photos').appendChild(createPhotosFragment(dataAd));
+  ad.querySelector('.popup__photos').appendChild(createPhotosFragment(dataAd.offer.photos));
   ad.querySelector('.map__card .popup__avatar').src = dataAd.autor.avatar;
   return ad;
 };
