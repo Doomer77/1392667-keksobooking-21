@@ -283,7 +283,7 @@ const activateFormMouseDown = (evt) => {
 
 mapPinMain.addEventListener('mousedown', activateFormMouseDown);
 
-typeInput.addEventListener('change', function (evt) {
+typeInput.addEventListener('change', (evt) => {
   switch (evt.target.value) {
     case 'bungalow':
       priceInput.min = 0;
@@ -304,11 +304,11 @@ typeInput.addEventListener('change', function (evt) {
   }
 });
 
-timeInInput.addEventListener('change', function (evt) {
+timeInInput.addEventListener('change', (evt) => {
   timeOutInput.value = evt.target.value;
 });
 
-timeOutInput.addEventListener('change', function (evt) {
+timeOutInput.addEventListener('change', (evt) => {
   timeInInput.value = evt.target.value;
 });
 
@@ -330,7 +330,7 @@ const disableСapacityOptions = (inputValue) => {
   }
 };
 
-roomNumber.addEventListener('change', function () {
+roomNumber.addEventListener('change', () => {
   disableСapacityOptions(roomNumber.value);
 });
 
@@ -343,15 +343,15 @@ const checkPlaceValidity = () => {
   }
 };
 
-roomNumber.addEventListener('change', function (evt) {
+roomNumber.addEventListener('change', (evt) => {
   evt.target.setCustomValidity('');
 });
 
-capacity.addEventListener('change', function (evt) {
+capacity.addEventListener('change', (evt) => {
   evt.target.setCustomValidity('');
 });
 
-btnSubmitForm.addEventListener('click', function () {
+btnSubmitForm.addEventListener('click', () => {
   checkPlaceValidity();
 });
 
