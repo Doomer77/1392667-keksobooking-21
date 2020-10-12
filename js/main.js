@@ -143,6 +143,9 @@ const getRandomLengthArr = (array) => {
 };
 
 let onEscDown = (evt, popup) => {
+  if (popup === null) {
+    return;
+  }
   if (evt.key === KEY_NAME.ESC) {
     popup.remove();
   }
@@ -192,7 +195,9 @@ const createPinMarkup = (pinData) => {
       mapCardMain.remove();
     }
     createAd(pinData);
-    document.addEventListener('keydown', onEscDown);
+    document.addEventListener('keydown', (evt) => {
+      onEscDown(evt, map.querySelector('.map__card'));
+    });
   });
   return pin;
 };
