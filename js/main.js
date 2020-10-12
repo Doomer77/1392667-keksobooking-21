@@ -274,6 +274,26 @@ const activateForm = () => {
   fillAddress();
 };
 
+const deactivationForm = () => {
+  let mapPinsItems = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  adForm.reset();
+  for (let i = 0; i < adFormFieldsets.length; i++) {
+    adFormFieldsets[i].disabled = true;
+  }
+  adFormHeader.disabled = true;
+  for (let j = 0; j < mapPinsItems.length; j++) {
+    mapPinsItems[j].remove();
+  }
+  if (mapCard) {
+    mapCard.remove();
+  }
+  mapPinMain.top = '375px';
+  mapPinMain.left = '570px';
+  addressInput.value = (mapPinMain.offsetTop - mapPinMain.offsetHeight / 2) + ', ' + (mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2);
+  map.classList.add('map--faded');
+  adForm.classList.add('ad-form--disabled');
+};
+
 mapPinMain.addEventListener('keydown', (evt) => {
   if (evt.key === KEY_NAME.ENTER) {
     activateForm();
@@ -294,3 +314,7 @@ const activateFormMouseDown = (evt) => {
 
 mapPinMain.addEventListener('mousedown', activateFormMouseDown);
 
+adForm.addEventListener('submit', (evt) => {
+  evt.preventDefault();
+  deactivationForm();
+});
