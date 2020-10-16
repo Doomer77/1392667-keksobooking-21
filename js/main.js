@@ -294,7 +294,7 @@ const deactivationForm = () => {
   }
   mapPinMain.top = '375px';
   mapPinMain.left = '570px';
-  addressInput.value = (mapPinMain.offsetTop - mapPinMain.offsetHeight / 2) + ', ' + (mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2);
+  addressInput.value = `${mapPinMain.offsetTop - mapPinMain.offsetHeight / 2} ${mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2}`;
   map.classList.add('map--faded');
   adForm.classList.add('ad-form--disabled');
 };
