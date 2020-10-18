@@ -260,6 +260,10 @@ const getStartingCoordMapPinMain = () => {
 };
 getStartingCoordMapPinMain();
 
+const fillAddress = () => {
+  addressInput.value = `${(mapPinMain.offsetTop + PIN.HEIGHT)}, ${(mapPinMain.offsetLeft + PIN.WIDTH / 2)}`;
+};
+
 const checkNotActivity = () => {
   adFormHeader.disabled = true;
   for (let field = 0; field < adFormFieldsets.length; field++) {
@@ -277,6 +281,7 @@ const activateForm = () => {
     }
     adFormHeader.disabled = false;
   }
+  fillAddress();
 };
 
 mapPinMain.addEventListener('keydown', (evt) => {
