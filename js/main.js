@@ -107,15 +107,6 @@ const monipulateElementDOM = (element) => {
   return result;
 };
 
-const getCoordPin = () => {
-  const pinElement = monipulateElementDOM('.map__pin:not(.map__pin--main)');
-  const pinCoord = {
-    WIDTH: Number.parseFloat(getComputedStyle(pinElement, ['::after']).width),
-    HEIGHT: Number.parseFloat(getComputedStyle(pinElement, ['::after']).height)
-  };
-  return pinCoord;
-};
-
 const map = monipulateElementDOM('.map');
 const mapPins = monipulateElementDOM('.map__pins');
 const mapFiltersContainer = monipulateElementDOM('.map__filters-container');
@@ -292,7 +283,6 @@ mapPinMain.addEventListener('keydown', (evt) => {
   if (evt.key === KEY_NAME.ENTER) {
     activateForm();
     renderPinsMarkup(getAdsArray);
-    getCoordPin();
   }
 });
 
@@ -302,7 +292,6 @@ const activateFormMouseDown = (evt) => {
       case 0:
         activateForm();
         renderPinsMarkup(getAdsArray);
-        getCoordPin();
         break;
     }
   }
@@ -330,7 +319,6 @@ const deactivationForm = () => {
   adForm.classList.add('ad-form--disabled');
 };
 
-adForm.addEventListener('submit', (evt) => {
-  evt.preventDefault();
+adForm.addEventListener('submit', () => {
   deactivationForm();
 });
