@@ -92,17 +92,28 @@ const PIN = {
   HEIGHT: 70
 };
 
+const START_COORDINATES_PIN_MAIN = {
+  TOP: '375px',
+  LEFT: '570px'
+};
+
 const KEY_NAME = {
   ENTER: 'Enter',
   ESC: 'Escape'
 };
 
-const monipulateElementDOM = (element, removeClass) => {
+const monipulateElementDOM = (element) => {
   const result = document.querySelector(element);
-  if (removeClass) {
-    return result.classList.remove(removeClass);
-  }
   return result;
+};
+
+const getCoordPin = () => {
+  const pinElement = monipulateElementDOM('.map__pin:not(.map__pin--main)');
+  const pinCoord = {
+    WIDTH: Number.parseFloat(getComputedStyle(pinElement, ['::after']).width),
+    HEIGHT: Number.parseFloat(getComputedStyle(pinElement, ['::after']).height)
+  };
+  return pinCoord;
 };
 
 const map = monipulateElementDOM('.map');
@@ -142,7 +153,7 @@ const getRandomLengthArr = (array) => {
   return copy;
 };
 
-let onEscDown = (evt, popup) => {
+const onEscDown = (evt, popup) => {
   if (popup === null) {
     return;
   }
@@ -180,14 +191,14 @@ const createAdObject = () => {
   return adsArray;
 };
 
-let getAdsArray = createAdObject();
+const getAdsArray = createAdObject();
 
 const createPinMarkup = (pinData) => {
   let pin = mapPinTemplate.cloneNode(true);
   let pinImgAtr = pin.querySelector('img');
   pinImgAtr.src = pinData.autor.avatar;
   pinImgAtr.alt = pinData.offer.title;
-  pin.style.left = `${pinData.location.x - PIN.WIDTH / 2}px`;
+  pin.style.left = `${pinData.location.x - PIN.WIDTH}px`;
   pin.style.top = `${pinData.location.y - PIN.HEIGHT}px`;
   pin.addEventListener('click', () => {
     let mapCardMain = map.querySelector('.map__card');
@@ -253,11 +264,10 @@ const createAd = (dataAd) => {
   return ad;
 };
 
-addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
-
-const fillAddress = () => {
-  addressInput.value = `${(mapPinMain.offsetTop + PIN.HEIGHT)}, ${(mapPinMain.offsetLeft + PIN.WIDTH / 2)}`;
+const getStartingCoordMapPinMain = () => {
+  addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
 };
+getStartingCoordMapPinMain();
 
 const checkNotActivity = () => {
   adFormHeader.disabled = true;
@@ -276,13 +286,13 @@ const activateForm = () => {
     }
     adFormHeader.disabled = false;
   }
-  fillAddress();
 };
 
 mapPinMain.addEventListener('keydown', (evt) => {
   if (evt.key === KEY_NAME.ENTER) {
     activateForm();
     renderPinsMarkup(getAdsArray);
+    getCoordPin();
   }
 });
 
@@ -292,6 +302,7 @@ const activateFormMouseDown = (evt) => {
       case 0:
         activateForm();
         renderPinsMarkup(getAdsArray);
+        getCoordPin();
         break;
     }
   }
@@ -312,9 +323,9 @@ const deactivationForm = () => {
   if (map.querySelector('.map__card')) {
     map.querySelector('.map__card').remove();
   }
-  mapPinMain.top = '375px';
-  mapPinMain.left = '570px';
-  addressInput.value = `${mapPinMain.offsetTop - mapPinMain.offsetHeight / 2} ${mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2}`;
+  mapPinMain.top = START_COORDINATES_PIN_MAIN.TOP;
+  mapPinMain.left = START_COORDINATES_PIN_MAIN.LEFT;
+  getStartingCoordMapPinMain();
   map.classList.add('map--faded');
   adForm.classList.add('ad-form--disabled');
 };
