@@ -120,6 +120,13 @@ const adForm = monipulateElementDOM('.ad-form');
 const adFormFieldsets = adForm.querySelectorAll('.ad-form__element');
 const adFormHeader = adForm.querySelector('.ad-form-header');
 const addressInput = adForm.querySelector('#address');
+const typeInput = monipulateElementDOM('#type');
+const priceInput = monipulateElementDOM('#price');
+const timeInInput = monipulateElementDOM('#timein');
+const timeOutInput = monipulateElementDOM('#timeout');
+const roomNumberSelect = monipulateElementDOM('#room_number');
+const capacitySelect = monipulateElementDOM('#capacity');
+const submitBtn = monipulateElementDOM('.ad-form__submit');
 const isActivate = false;
 
 const getRandomNumber = (max, min) => {
@@ -322,6 +329,78 @@ const deactivationForm = () => {
   getStartingCoordMapPinMain();
   map.classList.add('map--faded');
   adForm.classList.add('ad-form--disabled');
+};
+
+typeInput.addEventListener('change', (evt) => {
+  switch (evt.target.value) {
+    case 'bungalow':
+      priceInput.min = 0;
+      priceInput.placeholder = '0';
+      break;
+    case 'flat':
+      priceInput.min = 1000;
+      priceInput.placeholder = '1000';
+      break;
+    case 'house':
+      priceInput.min = 5000;
+      priceInput.placeholder = '5000';
+      break;
+    case 'palace':
+      priceInput.min = 10000;
+      priceInput.placeholder = '10000';
+      break;
+  }
+});
+
+timeInInput.addEventListener('change', (evt) => {
+  timeOutInput.value = evt.target.value;
+});
+
+timeOutInput.addEventListener('change', (evt) => {
+  timeInInput.value = evt.target.value;
+});
+
+const ROOMS_COUNT = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
+};
+
+const disableСapacityOptions = (inputValue) => {
+  let capacityOptions = capacitySelect.querySelectorAll('option');
+  for (let t = 0; t < capacityOptions.length; t++) {
+    capacityOptions[t].disabled = true;
+  }
+  for (let r = 0; r < ROOMS_COUNT[inputValue].length; r++) {
+    capacitySelect.querySelector(`${'option'}${'[value="'}${ROOMS_COUNT[inputValue][r]}${'"]'}`).disabled = false;
+    capacitySelect.value = ROOMS_COUNT[inputValue][r];
+  }
+};
+
+roomNumberSelect.addEventListener('change', () => {
+  disableСapacityOptions(roomNumberSelect.value);
+});
+
+roomNumberSelect.addEventListener('change', (evt) => {
+  evt.target.setCustomValidity('');
+});
+
+capacitySelect.addEventListener('change', (evt) => {
+  evt.target.setCustomValidity('');
+});
+
+submitBtn.addEventListener('click', () => {
+  checkPlaceValidity();
+});
+
+const checkPlaceValidity = () => {
+  let roomGuests = ROOMS_COUNT[roomNumberSelect.value];
+  if (roomGuests.indexOf(+capacitySelect.value) === -1) {
+    capacitySelect.setCustomValidity('Количество гостей не влезут в выбранную комнату');
+  } else {
+    capacitySelect.setCustomValidity('');
+  }
 };
 
 adForm.addEventListener('submit', () => {
