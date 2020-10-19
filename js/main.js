@@ -92,15 +92,22 @@ const PIN = {
   HEIGHT: 70
 };
 
-const monipulateElementDOM = (element, removeClass) => {
+const START_COORDINATES_PIN_MAIN = {
+  TOP: '375px',
+  LEFT: '570px'
+};
+
+const KEY_NAME = {
+  ENTER: 'Enter',
+  ESC: 'Escape'
+};
+
+const monipulateElementDOM = (element) => {
   const result = document.querySelector(element);
-  if (removeClass) {
-    return result.classList.remove(removeClass);
-  }
   return result;
 };
 
-monipulateElementDOM('.map', 'map--faded');
+const map = monipulateElementDOM('.map');
 const mapPins = monipulateElementDOM('.map__pins');
 const mapFiltersContainer = monipulateElementDOM('.map__filters-container');
 const templatePin = monipulateElementDOM('#pin');
@@ -108,7 +115,12 @@ const templateCard = monipulateElementDOM('#card');
 const mapPinTemplate = templatePin.content.querySelector('.map__pin');
 const mapCard = templateCard.content.querySelector('.map__card');
 const popupPhoto = templateCard.content.querySelector('.popup__photo');
-
+const mapPinMain = monipulateElementDOM('.map__pin--main');
+const adForm = monipulateElementDOM('.ad-form');
+const adFormFieldsets = adForm.querySelectorAll('.ad-form__element');
+const adFormHeader = adForm.querySelector('.ad-form-header');
+const addressInput = adForm.querySelector('#address');
+const isActivate = false;
 
 const getRandomNumber = (max, min) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -130,6 +142,15 @@ const getRandomLengthArr = (array) => {
   let length = getRandomNumber(0, copyArray.length + 1);
   let copy = copyArray.slice(0, length);
   return copy;
+};
+
+const onEscDown = (evt, popup) => {
+  if (popup === null) {
+    return;
+  }
+  if (evt.key === KEY_NAME.ESC) {
+    popup.remove();
+  }
 };
 
 const createAdObject = () => {
@@ -161,15 +182,25 @@ const createAdObject = () => {
   return adsArray;
 };
 
-let getAdsArray = createAdObject();
+const getAdsArray = createAdObject();
 
 const createPinMarkup = (pinData) => {
   let pin = mapPinTemplate.cloneNode(true);
   let pinImgAtr = pin.querySelector('img');
   pinImgAtr.src = pinData.autor.avatar;
   pinImgAtr.alt = pinData.offer.title;
-  pin.style.left = `${pinData.location.x - PIN.WIDTH / 2}px`;
+  pin.style.left = `${pinData.location.x - PIN.WIDTH}px`;
   pin.style.top = `${pinData.location.y - PIN.HEIGHT}px`;
+  pin.addEventListener('click', () => {
+    let mapCardMain = map.querySelector('.map__card');
+    if (mapCardMain) {
+      mapCardMain.remove();
+    }
+    createAd(pinData);
+    document.addEventListener('keydown', (evt) => {
+      onEscDown(evt, map.querySelector('.map__card'));
+    });
+  });
   return pin;
 };
 
@@ -180,8 +211,6 @@ const renderPinsMarkup = (pinsData) => {
   }
   mapPins.appendChild(pinFragment);
 };
-
-renderPinsMarkup(createAdObject());
 
 const createFeatureFragment = (features) => {
   let featureFragment = document.createDocumentFragment();
@@ -217,7 +246,84 @@ const createAd = (dataAd) => {
   ad.querySelector('.popup__photos').removeChild(ad.querySelector('.popup__photo'));
   ad.querySelector('.popup__photos').appendChild(createPhotosFragment(dataAd.offer.photos));
   ad.querySelector('.map__card .popup__avatar').src = dataAd.autor.avatar;
+  mapFiltersContainer.insertAdjacentElement('beforebegin', ad);
+  let closeAd = ad.querySelector('.popup__close');
+  closeAd.addEventListener('click', () => {
+    ad.remove();
+    document.removeEventListener('click', onEscDown);
+  });
   return ad;
 };
 
-mapFiltersContainer.insertAdjacentElement('beforebegin', createAd(getAdsArray[0]));
+const getStartingCoordMapPinMain = () => {
+  addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
+};
+getStartingCoordMapPinMain();
+
+const fillAddress = () => {
+  addressInput.value = `${(mapPinMain.offsetTop + PIN.HEIGHT)}, ${(mapPinMain.offsetLeft + PIN.WIDTH / 2)}`;
+};
+
+const checkNotActivity = () => {
+  adFormHeader.disabled = true;
+  for (let field = 0; field < adFormFieldsets.length; field++) {
+    adFormFieldsets[field].disabled = true;
+  }
+};
+checkNotActivity();
+
+const activateForm = () => {
+  if (!isActivate) {
+    map.classList.remove('map--faded');
+    adForm.classList.remove('ad-form--disabled');
+    for (let i = 0; i < adFormFieldsets.length; i++) {
+      adFormFieldsets[i].removeAttribute('disabled', 'disabled');
+    }
+    adFormHeader.disabled = false;
+  }
+  fillAddress();
+};
+
+mapPinMain.addEventListener('keydown', (evt) => {
+  if (evt.key === KEY_NAME.ENTER) {
+    activateForm();
+    renderPinsMarkup(getAdsArray);
+  }
+});
+
+const activateFormMouseDown = (evt) => {
+  if (typeof evt === 'object') {
+    switch (evt.button) {
+      case 0:
+        activateForm();
+        renderPinsMarkup(getAdsArray);
+        break;
+    }
+  }
+};
+
+mapPinMain.addEventListener('mousedown', activateFormMouseDown);
+
+const deactivationForm = () => {
+  let mapPinsItems = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+  adForm.reset();
+  for (let i = 0; i < adFormFieldsets.length; i++) {
+    adFormFieldsets[i].disabled = true;
+  }
+  adFormHeader.disabled = true;
+  for (let j = 0; j < mapPinsItems.length; j++) {
+    mapPinsItems[j].remove();
+  }
+  if (map.querySelector('.map__card')) {
+    map.querySelector('.map__card').remove();
+  }
+  mapPinMain.top = START_COORDINATES_PIN_MAIN.TOP;
+  mapPinMain.left = START_COORDINATES_PIN_MAIN.LEFT;
+  getStartingCoordMapPinMain();
+  map.classList.add('map--faded');
+  adForm.classList.add('ad-form--disabled');
+};
+
+adForm.addEventListener('submit', () => {
+  deactivationForm();
+});
