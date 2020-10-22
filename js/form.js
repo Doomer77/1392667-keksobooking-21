@@ -21,8 +21,17 @@
   };
   getStartingCoordMapPinMain();
 
+  const getBaseCoordinatesMapPinMain = () => {
+    let mapPinMainPosition = {
+      x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
+      y: mapPinMain.offsetTop + mapPinMain.offsetHeight
+    };
+    return mapPinMainPosition;
+  };
+
   const fillAddress = () => {
-    addressInput.value = `${(mapPinMain.offsetTop + window.data.PIN.HEIGHT)}, ${(mapPinMain.offsetLeft + window.data.PIN.WIDTH / 2)}`;
+    let addressInputCoords = getBaseCoordinatesMapPinMain();
+    addressInput.value = `${addressInputCoords.x} ${addressInputCoords.y}`;
   };
 
   const checkNotActivity = () => {
@@ -157,8 +166,50 @@
     }
   };
 
+  mapPinMain.addEventListener('mousedown', (evt) => {
+    evt.preventDefault();
+    let startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+    const onMouseMove = (moveEvt) => {
+      moveEvt.preventDefault();
+      let movementData = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+      let mapPinMainPosition = {
+        x: mapPinMain.offsetLeft - movementData.x,
+        y: mapPinMain.offsetTop - movementData.y
+      };
+      const BORDER = {
+        TOP: window.data.DRAG_LIMIT.Y.MIN - mapPinMain.offsetHeight,
+        BOTTOM: window.data.DRAG_LIMIT.Y.MAX - mapPinMain.offsetHeight,
+        LEFT: window.data.DRAG_LIMIT.X.MIN,
+        RIGHT: window.data.DRAG_LIMIT.X.MAX - mapPinMain.offsetWidth
+      };
+      if (mapPinMainPosition.x >= BORDER.LEFT && mapPinMainPosition.x <= BORDER.RIGHT) {
+        mapPinMain.style.left = `${mapPinMainPosition.x}px`;
+      }
+      if (mapPinMainPosition.y >= BORDER.TOP && mapPinMainPosition.y <= BORDER.BOTTOM) {
+        mapPinMain.style.top = `${mapPinMainPosition.y}px`;
+      }
+      fillAddress();
+    };
+    const onMouseUp = (upEvt) => {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+
   adForm.addEventListener('submit', () => {
     deactivationForm();
   });
 })();
-
