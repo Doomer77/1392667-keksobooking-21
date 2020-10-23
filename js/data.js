@@ -97,12 +97,12 @@ window.data = (function () {
     },
     DRAG_LIMIT: {
       X: {
-        MIN: 0,
-        MAX: 1200
+        MIN: -30,
+        MAX: 1230
       },
       Y: {
         MIN: 130,
-        MAX: 630
+        MAX: 680
       }
     }
   };
