@@ -95,5 +95,15 @@ window.data = (function () {
       TOP: '375px',
       LEFT: '570px'
     },
+    DRAG_LIMIT: {
+      X: {
+        MIN: -30,
+        MAX: 1230
+      },
+      Y: {
+        MIN: 130,
+        MAX: 680
+      }
+    }
   };
 })();

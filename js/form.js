@@ -21,8 +21,17 @@
   };
   getStartingCoordMapPinMain();
 
-  const fillAddress = () => {
-    addressInput.value = `${(mapPinMain.offsetTop + window.data.PIN.HEIGHT)}, ${(mapPinMain.offsetLeft + window.data.PIN.WIDTH / 2)}`;
+  const getBaseCoordinatesMapPinMain = () => {
+    let mapPinMainPosition = {
+      x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
+      y: mapPinMain.offsetTop + mapPinMain.offsetHeight
+    };
+    return mapPinMainPosition;
+  };
+
+  window.fillAddress = () => {
+    let addressInputCoords = getBaseCoordinatesMapPinMain();
+    addressInput.value = `${addressInputCoords.x} ${addressInputCoords.y}`;
   };
 
   const checkNotActivity = () => {
@@ -42,7 +51,7 @@
       }
       adFormHeader.disabled = false;
     }
-    fillAddress();
+    window.fillAddress();
   };
 
   mapPinMain.addEventListener('keydown', (evt) => {
@@ -161,4 +170,3 @@
     deactivationForm();
   });
 })();
-
