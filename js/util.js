@@ -36,6 +36,12 @@ window.util = (function () {
       if (evt.key === this.KEY_NAME.ESC) {
         popup.remove();
       }
+    },
+    renderErrorMessage: function (errorMessage) {
+      let message = document.createElement('div');
+      message.classList.add('error-message');
+      message.textContent = errorMessage;
+      document.body.insertAdjacentElement('afterbegin', message);
     }
   };
 })();

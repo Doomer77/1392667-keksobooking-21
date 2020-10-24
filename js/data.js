@@ -104,6 +104,13 @@ window.data = (function () {
         MIN: 130,
         MAX: 680
       }
-    }
+    },
+    PIN_SICE: {
+      WIDTH: 65,
+      HEIGHT: 65,
+    },
+    DEFAULT_MAIN_PIN_X: 601,
+    DEFAULT_MAIN_PIN_Y: 404,
+    TAIL_HEIGHT: 16
   };
 })();

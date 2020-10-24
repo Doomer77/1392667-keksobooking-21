@@ -34,7 +34,11 @@
       if (mapPinMainPosition.y >= BORDER.TOP && mapPinMainPosition.y <= BORDER.BOTTOM) {
         mapPinMain.style.top = `${mapPinMainPosition.y}px`;
       }
-      window.fillAddress();
+      let pinTailCoords = {
+        x: mapPinMainPosition.x + Math.ceil(window.data.PIN_SICE.WIDTH / 2),
+        y: mapPinMainPosition.y + window.data.PIN_SICE.HEIGHT + window.data.TAIL_HEIGHT
+      };
+      window.form.setAddress(pinTailCoords);
     };
     const onMouseUp = (upEvt) => {
       upEvt.preventDefault();
