@@ -49,19 +49,6 @@
     }
   });
 
-  // const activateFormMouseDown = (evt) => {
-  //   if (typeof evt === 'object') {
-  //     switch (evt.button) {
-  //       case 0:
-  //         window.map.activate();
-  //         window.form.activate();
-  //         break;
-  //     }
-  //   }
-  // };
-
-  // mapPinMain.addEventListener('mousedown', activateFormMouseDown);
-
   const deactivationForm = () => {
     adForm.reset();
     for (let i = 0; i < adFormFieldsets.length; i++) {

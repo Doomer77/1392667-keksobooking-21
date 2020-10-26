@@ -11,10 +11,16 @@
   const mapFiltersContainer = window.util.monipulateElementDOM('.map__filters-container');
   const mapPinMain = window.util.monipulateElementDOM('.map__pin--main');
 
-  const onMapPinMainMouseDown = () => {
-    window.map.activate();
-    window.form.activate();
-    mapPinMain.removeEventListener('mousedown', onMapPinMainMouseDown);
+  const onMapPinMainMouseDown = (evt) => {
+    if (typeof evt === 'object') {
+      switch (evt.button) {
+        case 0:
+          window.map.activate();
+          window.form.activate();
+          mapPinMain.removeEventListener('mousedown', onMapPinMainMouseDown);
+          break;
+      }
+    }
   };
 
   mapPinMain.addEventListener('mousedown', onMapPinMainMouseDown);
