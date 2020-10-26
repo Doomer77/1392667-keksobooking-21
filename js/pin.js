@@ -54,8 +54,8 @@
     let pinImgAtr = pin.querySelector('img');
     pinImgAtr.src = pinData.author.avatar;
     pinImgAtr.alt = pinData.offer.title;
-    pin.style.left = `${pinData.location.x - window.data.PIN.WIDTH}px`;
-    pin.style.top = `${pinData.location.y - window.data.PIN.HEIGHT}px`;
+    pin.style.left = `${pinData.location.x}px`;
+    pin.style.top = `${pinData.location.y}px`;
     pin.addEventListener('click', () => {
       let mapCardMain = map.querySelector('.map__card');
       if (mapCardMain) {
@@ -100,7 +100,7 @@
   const createAd = (dataAd) => {
     let ad = mapCard.cloneNode(true);
     ad.querySelector('.popup__title').textContent = dataAd.offer.title;
-    ad.querySelector('.popup__text--address').textContent = dataAd.address;
+    ad.querySelector('.popup__text--address').textContent = dataAd.offer.address;
     ad.querySelector('.popup__text--price').textContent = `${dataAd.offer.price}₽/ночь`;
     if (dataAd.offer.type === 'palace') {
       ad.querySelector('.popup__type').textContent = window.data.TYPES_MAP.PALACE;
@@ -123,7 +123,7 @@
     let closeAd = ad.querySelector('.popup__close');
     closeAd.addEventListener('click', () => {
       ad.remove();
-      document.removeEventListener('click', window.util.onEscDownonEscDown);
+      document.removeEventListener('click', window.util.onEscDown);
     });
     return ad;
   };

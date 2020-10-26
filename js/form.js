@@ -14,8 +14,22 @@
   const capacitySelect = window.util.monipulateElementDOM('#capacity');
   const submitBtn = window.util.monipulateElementDOM('.ad-form__submit');
 
-  const setAddressCoords = (coords) => {
-    addressInput.value = coords.x + ', ' + coords.y;
+  const getStartingCoordMapPinMain = () => {
+    addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
+  };
+  getStartingCoordMapPinMain();
+
+  const getBaseCoordinatesMapPinMain = () => {
+    let mapPinMainPosition = {
+      x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
+      y: mapPinMain.offsetTop + mapPinMain.offsetHeight
+    };
+    return mapPinMainPosition;
+  };
+
+  window.fillAddress = () => {
+    let addressInputCoords = getBaseCoordinatesMapPinMain();
+    addressInput.value = `${addressInputCoords.x} ${addressInputCoords.y}`;
   };
 
   const activateForm = () => {
@@ -24,27 +38,29 @@
       adFormFieldsets[i].disabled = false;
     }
     adFormHeader.disabled = false;
+    window.fillAddress();
   };
 
   mapPinMain.addEventListener('keydown', (evt) => {
     if (evt.key === window.util.KEY_NAME.ENTER) {
       window.map.activate();
       window.form.activate();
+      window.fillAddress();
     }
   });
 
-  const activateFormMouseDown = (evt) => {
-    if (typeof evt === 'object') {
-      switch (evt.button) {
-        case 0:
-          window.map.activate();
-          window.form.activate();
-          break;
-      }
-    }
-  };
+  // const activateFormMouseDown = (evt) => {
+  //   if (typeof evt === 'object') {
+  //     switch (evt.button) {
+  //       case 0:
+  //         window.map.activate();
+  //         window.form.activate();
+  //         break;
+  //     }
+  //   }
+  // };
 
-  mapPinMain.addEventListener('mousedown', activateFormMouseDown);
+  // mapPinMain.addEventListener('mousedown', activateFormMouseDown);
 
   const deactivationForm = () => {
     adForm.reset();
@@ -53,7 +69,7 @@
     }
     adFormHeader.disabled = true;
     var defaultCoords = window.map.getMainPinDefaultCoords();
-    setAddressCoords(defaultCoords);
+    getStartingCoordMapPinMain(defaultCoords);
     adForm.classList.add('ad-form--disabled');
   };
 
@@ -136,7 +152,7 @@
   });
 
   window.form = {
-    setAddress: setAddressCoords,
+    setAddress: window.fillAddress,
     activate: activateForm,
     deactivate: deactivationForm
   };
