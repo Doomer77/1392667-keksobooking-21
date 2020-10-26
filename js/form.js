@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  const map = window.util.monipulateElementDOM('.map');
   const mapPinMain = window.util.monipulateElementDOM('.map__pin--main');
   const adForm = window.util.monipulateElementDOM('.ad-form');
   const adFormFieldsets = adForm.querySelectorAll('.ad-form__element');
@@ -14,7 +13,6 @@
   const roomNumberSelect = window.util.monipulateElementDOM('#room_number');
   const capacitySelect = window.util.monipulateElementDOM('#capacity');
   const submitBtn = window.util.monipulateElementDOM('.ad-form__submit');
-  const isActivate = false;
 
   const getStartingCoordMapPinMain = () => {
     addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
@@ -34,65 +32,35 @@
     addressInput.value = `${addressInputCoords.x} ${addressInputCoords.y}`;
   };
 
-  const checkNotActivity = () => {
-    adFormHeader.disabled = true;
-    for (let field = 0; field < adFormFieldsets.length; field++) {
-      adFormFieldsets[field].disabled = true;
-    }
-  };
-  checkNotActivity();
-
   const activateForm = () => {
-    if (!isActivate) {
-      map.classList.remove('map--faded');
-      adForm.classList.remove('ad-form--disabled');
-      for (let i = 0; i < adFormFieldsets.length; i++) {
-        adFormFieldsets[i].removeAttribute('disabled', 'disabled');
-      }
-      adFormHeader.disabled = false;
+    adForm.classList.remove('ad-form--disabled');
+    for (let i = 0; i < adFormFieldsets.length; i++) {
+      adFormFieldsets[i].disabled = false;
     }
+    adFormHeader.disabled = false;
     window.fillAddress();
   };
 
   mapPinMain.addEventListener('keydown', (evt) => {
     if (evt.key === window.util.KEY_NAME.ENTER) {
-      activateForm();
-      window.renderPinsMarkup(window.getAdsArray);
+      window.map.activate();
+      window.form.activate();
+      window.fillAddress();
     }
   });
 
-  const activateFormMouseDown = (evt) => {
-    if (typeof evt === 'object') {
-      switch (evt.button) {
-        case 0:
-          activateForm();
-          window.renderPinsMarkup(window.getAdsArray);
-          break;
-      }
-    }
-  };
-
-  mapPinMain.addEventListener('mousedown', activateFormMouseDown);
-
   const deactivationForm = () => {
-    let mapPinsItems = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     adForm.reset();
     for (let i = 0; i < adFormFieldsets.length; i++) {
       adFormFieldsets[i].disabled = true;
     }
     adFormHeader.disabled = true;
-    for (let j = 0; j < mapPinsItems.length; j++) {
-      mapPinsItems[j].remove();
-    }
-    if (map.querySelector('.map__card')) {
-      map.querySelector('.map__card').remove();
-    }
-    mapPinMain.top = window.data.START_COORDINATES_PIN_MAIN.TOP;
-    mapPinMain.left = window.data.START_COORDINATES_PIN_MAIN.LEFT;
-    getStartingCoordMapPinMain();
-    map.classList.add('map--faded');
+    var defaultCoords = window.map.getMainPinDefaultCoords();
+    getStartingCoordMapPinMain(defaultCoords);
     adForm.classList.add('ad-form--disabled');
   };
+
+  deactivationForm();
 
   typeInput.addEventListener('change', (evt) => {
     switch (evt.target.value) {
@@ -169,4 +137,10 @@
   adForm.addEventListener('submit', () => {
     deactivationForm();
   });
+
+  window.form = {
+    setAddress: window.fillAddress,
+    activate: activateForm,
+    deactivate: deactivationForm
+  };
 })();
