@@ -4,8 +4,9 @@ window.util = (function () {
   return {
     KEY_NAME: {
       ENTER: 'Enter',
-      ESC: 'Escape'
+      ESC: 'Escape',
     },
+    DEBOUNCE_INTERVAL: 500,
     monipulateElementDOM: function (element) {
       const result = document.querySelector(element);
       return result;
@@ -42,6 +43,17 @@ window.util = (function () {
       message.classList.add('error-message');
       message.textContent = errorMessage;
       document.body.insertAdjacentElement('afterbegin', message);
+    },
+    debounce: function (fun) {
+      let lastTimeout = null;
+      return function (...parameters) {
+        if (lastTimeout) {
+          window.clearTimeout(lastTimeout);
+        }
+        lastTimeout = window.setTimeout(function () {
+          fun(...parameters);
+        }, window.DEBOUNCE_INTERVAL);
+      };
     }
   };
 })();

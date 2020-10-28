@@ -172,6 +172,7 @@
     showSuccessMassege();
     window.map.deactivate();
     window.form.deactivate();
+    window.filter.deactivate();
   };
 
   adForm.addEventListener('submit', (evt) => {
@@ -183,6 +184,7 @@
   resetBtn.addEventListener('click', function () {
     window.map.deactivate();
     window.form.deactivate();
+    window.filter.deactivate();
   });
 
   window.form = {
