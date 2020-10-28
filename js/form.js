@@ -13,6 +13,13 @@
   const roomNumberSelect = window.util.monipulateElementDOM('#room_number');
   const capacitySelect = window.util.monipulateElementDOM('#capacity');
   const submitBtn = window.util.monipulateElementDOM('.ad-form__submit');
+  const main = window.util.monipulateElementDOM('main');
+  const successTemplate = window.util.monipulateElementDOM('#success');
+  const successMassege = successTemplate.content.querySelector('.success');
+  const errorTemplate = window.util.monipulateElementDOM('#error');
+  const errorsMassege = errorTemplate.content.querySelector('.error');
+  const errorsBtn = errorTemplate.content.querySelector('.error__button');
+  const resetBtn = window.util.monipulateElementDOM('.ad-form__reset');
 
   const getStartingCoordMapPinMain = () => {
     addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
@@ -134,8 +141,48 @@
     }
   };
 
-  adForm.addEventListener('submit', () => {
-    deactivationForm();
+  const showSuccessMassege = () => {
+    main.appendChild(successMassege);
+    window.addEventListener('keydown', (evt) => {
+      if (window.util.onEscDown(evt, successMassege)) {
+        successMassege.remove();
+      }
+    });
+    document.addEventListener('click', () => {
+      successMassege.remove();
+    });
+  };
+
+  const showErrorMassege = () => {
+    main.appendChild(errorsMassege);
+    window.addEventListener('keydown', (evt) => {
+      if (window.util.onEscDown(evt, errorsMassege)) {
+        errorsMassege.remove();
+      }
+    });
+    document.addEventListener('click', () => {
+      errorsMassege.remove();
+    });
+    errorsBtn.addEventListener('click', () => {
+      errorsMassege.remove();
+    });
+  };
+
+  const onSubmitSuccess = () => {
+    showSuccessMassege();
+    window.map.deactivate();
+    window.form.deactivate();
+  };
+
+  adForm.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    let formData = new FormData(adForm);
+    window.backend.upload(onSubmitSuccess, showErrorMassege, formData);
+  });
+
+  resetBtn.addEventListener('click', function () {
+    window.map.deactivate();
+    window.form.deactivate();
   });
 
   window.form = {

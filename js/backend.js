@@ -3,6 +3,7 @@
 (function () {
   const SERVER_URL = {
     LOAD: 'https://21.javascript.pages.academy/keksobooking/data',
+    UPLOAD: 'https://21.javascript.pages.academy/keksobooking'
   };
   const MESSAGE_TEXT = {
     ERROR_LOAD: 'Произошла неизвестная ошибка. Пожалуйста, обновите страницу.',
@@ -31,7 +32,11 @@
   const load = (onLoad, onError) => {
     createXhr('GET', SERVER_URL.LOAD, onLoad, onError).send();
   };
+  const upload = (onLoad, onError, data) => {
+    createXhr('POST', SERVER_URL.UPLOAD, onLoad, onError).send(data);
+  };
   window.backend = {
     load: load,
+    upload: upload,
   };
 })();
