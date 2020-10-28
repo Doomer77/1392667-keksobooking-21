@@ -2,6 +2,7 @@
 
 window.data = (function () {
   return {
+    PINS_LIMIT: 5,
     TYPES_MAP: {
       PALACE: 'Дворец',
       FLAT: 'Квартира',
