@@ -3,7 +3,7 @@
 (function () {
   const SERVER_URL = {
     LOAD: 'https://21.javascript.pages.academy/keksobooking/data',
-    UPLOAD: 'https://21.javascript.pages.academy/keksobookin'
+    UPLOAD: 'https://21.javascript.pages.academy/keksobooking'
   };
   const MESSAGE_TEXT = {
     ERROR_LOAD: 'Произошла неизвестная ошибка. Пожалуйста, обновите страницу.',
