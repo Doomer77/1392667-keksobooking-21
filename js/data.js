@@ -9,6 +9,20 @@ window.data = (function () {
       HOUSE: 'Дом',
       BUNGALO: 'Бунгало'
     },
+    PRICE_RANGE: {
+      LOW: {
+        MIN: 0,
+        MAX: 10000
+      },
+      MIDDLE: {
+        MIN: 10000,
+        MAX: 50000
+      },
+      HIGH: {
+        MIN: 50000,
+        MAX: Infinity
+      }
+    },
     DRAG_LIMIT: {
       X: {
         MIN: -30,
