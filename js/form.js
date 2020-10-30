@@ -1,195 +1,192 @@
 'use strict';
 
-(function () {
-  const mapPinMain = window.util.monipulateElementDOM('.map__pin--main');
-  const adForm = window.util.monipulateElementDOM('.ad-form');
-  const adFormFieldsets = adForm.querySelectorAll('.ad-form__element');
-  const adFormHeader = adForm.querySelector('.ad-form-header');
-  const addressInput = adForm.querySelector('#address');
-  const typeInput = window.util.monipulateElementDOM('#type');
-  const priceInput = window.util.monipulateElementDOM('#price');
-  const timeInInput = window.util.monipulateElementDOM('#timein');
-  const timeOutInput = window.util.monipulateElementDOM('#timeout');
-  const roomNumberSelect = window.util.monipulateElementDOM('#room_number');
-  const capacitySelect = window.util.monipulateElementDOM('#capacity');
-  const submitBtn = window.util.monipulateElementDOM('.ad-form__submit');
-  const main = window.util.monipulateElementDOM('main');
-  const successTemplate = window.util.monipulateElementDOM('#success');
-  const successMassege = successTemplate.content.querySelector('.success');
-  const errorTemplate = window.util.monipulateElementDOM('#error');
-  const errorsMassege = errorTemplate.content.querySelector('.error');
-  const errorsBtn = errorTemplate.content.querySelector('.error__button');
-  const resetBtn = window.util.monipulateElementDOM('.ad-form__reset');
+const mapPinMain = window.util.monipulateElementDOM(`.map__pin--main`);
+const adForm = window.util.monipulateElementDOM(`.ad-form`);
+const adFormFieldsets = adForm.querySelectorAll(`.ad-form__element`);
+const adFormHeader = adForm.querySelector(`.ad-form-header`);
+const addressInput = adForm.querySelector(`#address`);
+const typeInput = window.util.monipulateElementDOM(`#type`);
+const priceInput = window.util.monipulateElementDOM(`#price`);
+const timeInInput = window.util.monipulateElementDOM(`#timein`);
+const timeOutInput = window.util.monipulateElementDOM(`#timeout`);
+const roomNumberSelect = window.util.monipulateElementDOM(`#room_number`);
+const capacitySelect = window.util.monipulateElementDOM(`#capacity`);
+const submitBtn = window.util.monipulateElementDOM(`.ad-form__submit`);
+const main = window.util.monipulateElementDOM(`main`);
+const successTemplate = window.util.monipulateElementDOM(`#success`);
+const successMassege = successTemplate.content.querySelector(`.success`);
+const errorTemplate = window.util.monipulateElementDOM(`#error`);
+const errorsMassege = errorTemplate.content.querySelector(`.error`);
+const errorsBtn = errorTemplate.content.querySelector(`.error__button`);
+const resetBtn = window.util.monipulateElementDOM(`.ad-form__reset`);
 
-  const getStartingCoordMapPinMain = () => {
-    addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
+const getStartingCoordMapPinMain = () => {
+  addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
+};
+getStartingCoordMapPinMain();
+
+const getBaseCoordinatesMapPinMain = () => {
+  let mapPinMainPosition = {
+    x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
+    y: mapPinMain.offsetTop + mapPinMain.offsetHeight
   };
-  getStartingCoordMapPinMain();
+  return mapPinMainPosition;
+};
 
-  const getBaseCoordinatesMapPinMain = () => {
-    let mapPinMainPosition = {
-      x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
-      y: mapPinMain.offsetTop + mapPinMain.offsetHeight
-    };
-    return mapPinMainPosition;
-  };
+window.fillAddress = () => {
+  let addressInputCoords = getBaseCoordinatesMapPinMain();
+  addressInput.value = `${addressInputCoords.x} ${addressInputCoords.y}`;
+};
 
-  window.fillAddress = () => {
-    let addressInputCoords = getBaseCoordinatesMapPinMain();
-    addressInput.value = `${addressInputCoords.x} ${addressInputCoords.y}`;
-  };
+const activateForm = () => {
+  adForm.classList.remove(`ad-form--disabled`);
+  for (let i = 0; i < adFormFieldsets.length; i++) {
+    adFormFieldsets[i].disabled = false;
+  }
+  adFormHeader.disabled = false;
+  window.fillAddress();
+};
 
-  const activateForm = () => {
-    adForm.classList.remove('ad-form--disabled');
-    for (let i = 0; i < adFormFieldsets.length; i++) {
-      adFormFieldsets[i].disabled = false;
-    }
-    adFormHeader.disabled = false;
+mapPinMain.addEventListener(`keydown`, (evt) => {
+  if (evt.key === window.util.KEY_NAME.ENTER) {
+    window.map.activate();
+    window.form.activate();
     window.fillAddress();
-  };
+  }
+});
 
-  mapPinMain.addEventListener('keydown', (evt) => {
-    if (evt.key === window.util.KEY_NAME.ENTER) {
-      window.map.activate();
-      window.form.activate();
-      window.fillAddress();
-    }
-  });
+const deactivationForm = () => {
+  adForm.reset();
+  for (let i = 0; i < adFormFieldsets.length; i++) {
+    adFormFieldsets[i].disabled = true;
+  }
+  adFormHeader.disabled = true;
+  var defaultCoords = window.map.getMainPinDefaultCoords();
+  getStartingCoordMapPinMain(defaultCoords);
+  adForm.classList.add(`ad-form--disabled`);
+};
+deactivationForm();
 
-  const deactivationForm = () => {
-    adForm.reset();
-    for (let i = 0; i < adFormFieldsets.length; i++) {
-      adFormFieldsets[i].disabled = true;
-    }
-    adFormHeader.disabled = true;
-    var defaultCoords = window.map.getMainPinDefaultCoords();
-    getStartingCoordMapPinMain(defaultCoords);
-    adForm.classList.add('ad-form--disabled');
-  };
+typeInput.addEventListener(`change`, (evt) => {
+  switch (evt.target.value) {
+    case `bungalow`:
+      priceInput.min = 0;
+      priceInput.placeholder = `0`;
+      break;
+    case `flat`:
+      priceInput.min = 1000;
+      priceInput.placeholder = `1000`;
+      break;
+    case `house`:
+      priceInput.min = 5000;
+      priceInput.placeholder = `5000`;
+      break;
+    case `palace`:
+      priceInput.min = 10000;
+      priceInput.placeholder = `10000`;
+      break;
+  }
+});
 
-  deactivationForm();
+timeInInput.addEventListener(`change`, (evt) => {
+  timeOutInput.value = evt.target.value;
+});
 
-  typeInput.addEventListener('change', (evt) => {
-    switch (evt.target.value) {
-      case 'bungalow':
-        priceInput.min = 0;
-        priceInput.placeholder = '0';
-        break;
-      case 'flat':
-        priceInput.min = 1000;
-        priceInput.placeholder = '1000';
-        break;
-      case 'house':
-        priceInput.min = 5000;
-        priceInput.placeholder = '5000';
-        break;
-      case 'palace':
-        priceInput.min = 10000;
-        priceInput.placeholder = '10000';
-        break;
-    }
-  });
+timeOutInput.addEventListener(`change`, (evt) => {
+  timeInInput.value = evt.target.value;
+});
 
-  timeInInput.addEventListener('change', (evt) => {
-    timeOutInput.value = evt.target.value;
-  });
+const ROOMS_COUNT = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
+};
 
-  timeOutInput.addEventListener('change', (evt) => {
-    timeInInput.value = evt.target.value;
-  });
+const disableСapacityOptions = (inputValue) => {
+  let capacityOptions = capacitySelect.querySelectorAll(`option`);
+  for (let t = 0; t < capacityOptions.length; t++) {
+    capacityOptions[t].disabled = true;
+  }
+  for (let r = 0; r < ROOMS_COUNT[inputValue].length; r++) {
+    capacitySelect.querySelector(`${`option`}${`[value="`}${ROOMS_COUNT[inputValue][r]}${`"]`}`).disabled = false;
+    capacitySelect.value = ROOMS_COUNT[inputValue][r];
+  }
+};
 
-  const ROOMS_COUNT = {
-    1: [1],
-    2: [1, 2],
-    3: [1, 2, 3],
-    100: [0]
-  };
+roomNumberSelect.addEventListener(`change`, () => {
+  disableСapacityOptions(roomNumberSelect.value);
+});
 
-  const disableСapacityOptions = (inputValue) => {
-    let capacityOptions = capacitySelect.querySelectorAll('option');
-    for (let t = 0; t < capacityOptions.length; t++) {
-      capacityOptions[t].disabled = true;
-    }
-    for (let r = 0; r < ROOMS_COUNT[inputValue].length; r++) {
-      capacitySelect.querySelector(`${'option'}${'[value="'}${ROOMS_COUNT[inputValue][r]}${'"]'}`).disabled = false;
-      capacitySelect.value = ROOMS_COUNT[inputValue][r];
-    }
-  };
+roomNumberSelect.addEventListener(`change`, (evt) => {
+  evt.target.setCustomValidity(``);
+});
 
-  roomNumberSelect.addEventListener('change', () => {
-    disableСapacityOptions(roomNumberSelect.value);
-  });
+capacitySelect.addEventListener(`change`, (evt) => {
+  evt.target.setCustomValidity(``);
+});
 
-  roomNumberSelect.addEventListener('change', (evt) => {
-    evt.target.setCustomValidity('');
-  });
+submitBtn.addEventListener(`click`, () => {
+  checkPlaceValidity();
+});
 
-  capacitySelect.addEventListener('change', (evt) => {
-    evt.target.setCustomValidity('');
-  });
+const checkPlaceValidity = () => {
+  let roomGuests = ROOMS_COUNT[roomNumberSelect.value];
+  if (roomGuests.indexOf(+capacitySelect.value) === -1) {
+    capacitySelect.setCustomValidity(`Количество гостей не влезут в выбранную комнату`);
+  } else {
+    capacitySelect.setCustomValidity(``);
+  }
+};
 
-  submitBtn.addEventListener('click', () => {
-    checkPlaceValidity();
-  });
-
-  const checkPlaceValidity = () => {
-    let roomGuests = ROOMS_COUNT[roomNumberSelect.value];
-    if (roomGuests.indexOf(+capacitySelect.value) === -1) {
-      capacitySelect.setCustomValidity('Количество гостей не влезут в выбранную комнату');
-    } else {
-      capacitySelect.setCustomValidity('');
-    }
-  };
-
-  const showSuccessMassege = () => {
-    main.appendChild(successMassege);
-    window.addEventListener('keydown', (evt) => {
-      if (window.util.onEscDown(evt, successMassege)) {
-        successMassege.remove();
-      }
-    });
-    document.addEventListener('click', () => {
+const showSuccessMassege = () => {
+  main.appendChild(successMassege);
+  window.addEventListener(`keydown`, (evt) => {
+    if (window.util.onEscDown(evt, successMassege)) {
       successMassege.remove();
-    });
-  };
-
-  const showErrorMassege = () => {
-    main.appendChild(errorsMassege);
-    window.addEventListener('keydown', (evt) => {
-      if (window.util.onEscDown(evt, errorsMassege)) {
-        errorsMassege.remove();
-      }
-    });
-    document.addEventListener('click', () => {
-      errorsMassege.remove();
-    });
-    errorsBtn.addEventListener('click', () => {
-      errorsMassege.remove();
-    });
-  };
-
-  const onSubmitSuccess = () => {
-    showSuccessMassege();
-    window.map.deactivate();
-    window.form.deactivate();
-    window.filter.deactivate();
-  };
-
-  adForm.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    let formData = new FormData(adForm);
-    window.backend.upload(onSubmitSuccess, showErrorMassege, formData);
+    }
   });
-
-  resetBtn.addEventListener('click', function () {
-    window.map.deactivate();
-    window.form.deactivate();
-    window.filter.deactivate();
+  document.addEventListener(`click`, () => {
+    successMassege.remove();
   });
+};
 
-  window.form = {
-    setAddress: window.fillAddress,
-    activate: activateForm,
-    deactivate: deactivationForm
-  };
-})();
+const showErrorMassege = () => {
+  main.appendChild(errorsMassege);
+  window.addEventListener(`keydown`, (evt) => {
+    if (window.util.onEscDown(evt, errorsMassege)) {
+      errorsMassege.remove();
+    }
+  });
+  document.addEventListener(`click`, () => {
+    errorsMassege.remove();
+  });
+  errorsBtn.addEventListener(`click`, () => {
+    errorsMassege.remove();
+  });
+};
+
+const onSubmitSuccess = () => {
+  showSuccessMassege();
+  window.map.deactivate();
+  window.form.deactivate();
+  window.filter.deactivate();
+};
+
+adForm.addEventListener(`submit`, (evt) => {
+  evt.preventDefault();
+  let formData = new FormData(adForm);
+  window.backend.upload(onSubmitSuccess, showErrorMassege, formData);
+});
+
+resetBtn.addEventListener(`click`, function () {
+  window.map.deactivate();
+  window.form.deactivate();
+  window.filter.deactivate();
+});
+
+window.form = {
+  setAddress: window.fillAddress,
+  activate: activateForm,
+  deactivate: deactivationForm
+};
