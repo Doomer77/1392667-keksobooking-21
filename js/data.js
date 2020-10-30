@@ -38,6 +38,15 @@ window.data = {
   },
   DEFAULT_MAIN_PIN_X: 601,
   DEFAULT_MAIN_PIN_Y: 404,
-  TAIL_HEIGHT: 16
+  TAIL_HEIGHT: 16,
+
+  FILE_TYPES: [`gif`, `jpg`, `jpeg`, `png`],
+  DEFAULT_AVATAR: `img/muffin-grey.svg`,
+
+  IMAGE_PARAMS: {
+    WIDTH: `70px`,
+    HEIGHT: `70px`,
+    BORDER_RADIUS: `5px`
+  }
 };
 
