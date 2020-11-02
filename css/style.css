@@ -741,9 +741,6 @@ fieldset {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin-right: 10px;
-
-  width: 150px;
   min-height: 70px;
 }
 
@@ -756,10 +753,9 @@ fieldset {
 }
 
 .ad-form__drop-zone {
-  width: 100%;
+  width: 150px;
   height: 70px;
   padding: 20px 10px 5px;
-
   text-align: center;
   font-size: 14px;
   color: #999999;
@@ -782,8 +778,9 @@ fieldset {
 }
 
 .ad-form__photo {
-  margin-right: 10px;
+  
   margin-bottom: 10px;
+  margin-left: 10px;
 
   width: 70px;
   height: 70px;

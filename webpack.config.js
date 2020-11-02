@@ -5,6 +5,7 @@ module.exports =  {
     "./js/backend.js",
     "./js/util.js",
     "./js/data.js",
+    "./js/image-downloader.js",
     "./js/pin.js",
     "./js/map.js",
     "./js/form.js",

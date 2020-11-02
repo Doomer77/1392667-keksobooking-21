@@ -45,6 +45,7 @@ const activateForm = () => {
   }
   adFormHeader.disabled = false;
   window.fillAddress();
+  window.loadImage.activate();
 };
 
 mapPinMain.addEventListener(`keydown`, (evt) => {
@@ -64,6 +65,8 @@ const deactivationForm = () => {
   var defaultCoords = window.map.getMainPinDefaultCoords();
   getStartingCoordMapPinMain(defaultCoords);
   adForm.classList.add(`ad-form--disabled`);
+  window.loadImage.deactivate();
+  window.loadImage.remove();
 };
 deactivationForm();
 
@@ -183,6 +186,7 @@ resetBtn.addEventListener(`click`, function () {
   window.map.deactivate();
   window.form.deactivate();
   window.filter.deactivate();
+  window.loadImage.remove();
 });
 
 window.form = {
