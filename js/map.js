@@ -46,7 +46,7 @@ window.util.mapPinMain.addEventListener(`mousedown`, (evt) => {
       window.util.mapPinMain.style.top = `${mapPinMainPosition.y}px`;
     }
     let pinTailCoords = {
-      x: mapPinMainPosition.x + Math.ceil(window.util.PIN_SICE.HEIGHT / 2),
+      x: mapPinMainPosition.x + Math.ceil(window.util.PIN_SICE.WIDTH / 2),
       y: mapPinMainPosition.y + window.util.PIN_SICE.HEIGHT + TAIL_HEIGHT
     };
     window.address.fillAddress(pinTailCoords);

@@ -8,8 +8,6 @@ const mapPinTemplate = templatePin.content.querySelector(`.map__pin`);
 const mapCard = templateCard.content.querySelector(`.map__card`);
 const popupPhoto = templateCard.content.querySelector(`.popup__photo`);
 const mapFiltersContainer = document.querySelector(`.map__filters-container`);
-const DEFAULT_MAIN_PIN_X = 601;
-const DEFAULT_MAIN_PIN_Y = 404;
 const HousingTypes = {
   PALACE: `Дворец`,
   FLAT: `Квартира`,
@@ -51,8 +49,6 @@ const deactivateMap = () => {
   map.classList.add(`map--faded`);
   removePins();
   removeMapCard();
-  window.util.mapPinMain.style.top = `${DEFAULT_MAIN_PIN_Y - window.util.PIN_SICE.HEIGHT / 2}px`;
-  window.util.mapPinMain.style.left = `${DEFAULT_MAIN_PIN_X - window.util.PIN_SICE.WIDTH / 2}px`;
   window.util.mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
 };
 deactivateMap();
@@ -147,15 +143,7 @@ const createAd = (dataAd) => {
   return ad;
 };
 
-const getMainPinDefaultCoords = () => {
-  return {
-    x: DEFAULT_MAIN_PIN_X,
-    y: DEFAULT_MAIN_PIN_Y
-  };
-};
-
 window.map = {
-  getMainPinDefaultCoords,
   removePins,
   removeMapCard,
   activateMap,

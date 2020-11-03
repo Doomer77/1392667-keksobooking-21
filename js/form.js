@@ -29,7 +29,6 @@ const RoomsCount = {
 const getStartingCoordMapPinMain = () => {
   addressInput.value = `${Math.floor(window.util.mapPinMain.offsetLeft) - Math.floor(window.util.mapPinMain.offsetWidth / 2)}, ${Math.floor(window.util.mapPinMain.offsetTop) - Math.floor(window.util.mapPinMain.offsetHeight / 2)}`;
 };
-getStartingCoordMapPinMain();
 
 const getBaseCoordinatesMapPinMain = () => {
   let mapPinMainPosition = {
@@ -68,10 +67,9 @@ const deactivationForm = () => {
   for (let i = 0; i < adFormFieldsets.length; i++) {
     adFormFieldsets[i].disabled = true;
   }
+  getStartingCoordMapPinMain();
   adFormHeader.disabled = true;
   adForm.disabled = true;
-  let defaultCoords = window.map.getMainPinDefaultCoords();
-  getStartingCoordMapPinMain(defaultCoords);
   adForm.classList.add(`ad-form--disabled`);
   window.loadImage.deactivate();
   window.loadImage.removeImages();
@@ -184,7 +182,7 @@ adForm.addEventListener(`submit`, (evt) => {
 });
 
 resetBtn.addEventListener(`click`, () => {
-  window.map.deactivate();
+  window.map.deactivateMap();
   window.form.deactivationForm();
   window.filter.deactivateFiltration();
   window.loadImage.removeImages();
@@ -192,7 +190,8 @@ resetBtn.addEventListener(`click`, () => {
 
 window.form = {
   activateForm,
-  deactivationForm
+  deactivationForm,
+  getStartingCoordMapPinMain
 };
 
 window.address = {
