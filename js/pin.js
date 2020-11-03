@@ -1,22 +1,33 @@
 'use strict';
 
-const map = window.util.monipulateElementDOM(`.map`);
-const mapPins = window.util.monipulateElementDOM(`.map__pins`);
-const templatePin = window.util.monipulateElementDOM(`#pin`);
-const templateCard = window.util.monipulateElementDOM(`#card`);
+const map = document.querySelector(`.map`);
+const mapPins = document.querySelector(`.map__pins`);
+const templatePin = document.querySelector(`#pin`);
+const templateCard = document.querySelector(`#card`);
 const mapPinTemplate = templatePin.content.querySelector(`.map__pin`);
 const mapCard = templateCard.content.querySelector(`.map__card`);
 const popupPhoto = templateCard.content.querySelector(`.popup__photo`);
-const mapFiltersContainer = window.util.monipulateElementDOM(`.map__filters-container`);
-const mapPinMain = window.util.monipulateElementDOM(`.map__pin--main`);
+const mapFiltersContainer = document.querySelector(`.map__filters-container`);
+const DEFAULT_MAIN_PIN_X = 601;
+const DEFAULT_MAIN_PIN_Y = 404;
+const HousingTypes = {
+  PALACE: `Дворец`,
+  FLAT: `Квартира`,
+  HOUSE: `Дом`,
+  BUNGALO: `Бунгало`
+};
+const Pin = {
+  WIDTH: 50,
+  HEIGHT: 70
+};
 
 const onMapPinMainMouseDown = (evt) => {
   if (typeof evt === `object`) {
     switch (evt.button) {
       case 0:
-        window.map.activate();
-        window.form.activate();
-        mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
+        window.map.activateMap();
+        window.form.activateForm();
+        window.util.mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
         break;
     }
   }
@@ -40,19 +51,15 @@ const deactivateMap = () => {
   map.classList.add(`map--faded`);
   removePins();
   removeMapCard();
-  mapPinMain.style.top = `${window.data.DEFAULT_MAIN_PIN_Y - window.data.PIN_SICE.HEIGHT / 2}px`;
-  mapPinMain.style.left = `${window.data.DEFAULT_MAIN_PIN_X - window.data.PIN_SICE.WIDTH / 2}px`;
-  mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
+  window.util.mapPinMain.style.top = `${DEFAULT_MAIN_PIN_Y - window.util.PIN_SICE.HEIGHT / 2}px`;
+  window.util.mapPinMain.style.left = `${DEFAULT_MAIN_PIN_X - window.util.PIN_SICE.WIDTH / 2}px`;
+  window.util.mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
 };
 deactivateMap();
 
-const onLoadSuccess = (adData) => {
-  window.filter.activate(adData);
-};
+const onLoadSuccess = (adData) => window.filter.activateFiltration(adData);
 
-const onLoadError = (errorMessage) => {
-  window.util.renderErrorMessage(errorMessage);
-};
+const onLoadError = (errorMessage) => window.util.renderErrorMessage(errorMessage);
 
 const activateMap = () => {
   window.backend.load(onLoadSuccess, onLoadError);
@@ -64,8 +71,9 @@ const createPinMarkup = (pinData) => {
   let pinImgAtr = pin.querySelector(`img`);
   pinImgAtr.src = pinData.author.avatar;
   pinImgAtr.alt = pinData.offer.title;
-  pin.style.left = `${pinData.location.x}px`;
-  pin.style.top = `${pinData.location.y}px`;
+  let {WIDTH, HEIGHT} = Pin;
+  pin.style.left = `${pinData.location.x - WIDTH / 2}px`;
+  pin.style.top = `${pinData.location.y - HEIGHT}px`;
   pin.addEventListener(`click`, () => {
     let mapCardMain = map.querySelector(`.map__card`);
     if (mapCardMain) {
@@ -79,7 +87,7 @@ const createPinMarkup = (pinData) => {
   return pin;
 };
 
-window.renderPinsMarkup = (pinsData) => {
+const renderPinsMarkup = (pinsData) => {
   let pinFragment = document.createDocumentFragment();
   for (let j = 0; j < pinsData.length; j++) {
     pinFragment.appendChild(createPinMarkup(pinsData[j]));
@@ -108,18 +116,19 @@ const createPhotosFragment = (photos) => {
 };
 
 const createAd = (dataAd) => {
+  let {PALACE, FLAT, HOUSE, BUNGALO} = HousingTypes;
   let ad = mapCard.cloneNode(true);
   ad.querySelector(`.popup__title`).textContent = dataAd.offer.title;
   ad.querySelector(`.popup__text--address`).textContent = dataAd.offer.address;
   ad.querySelector(`.popup__text--price`).textContent = `${dataAd.offer.price}₽/ночь`;
   if (dataAd.offer.type === `palace`) {
-    ad.querySelector(`.popup__type`).textContent = window.data.TYPES_MAP.PALACE;
+    ad.querySelector(`.popup__type`).textContent = PALACE;
   } else if (dataAd.offer.type === `flat`) {
-    ad.querySelector(`.popup__type`).textContent = window.data.TYPES_MAP.FLAT;
+    ad.querySelector(`.popup__type`).textContent = FLAT;
   } else if (dataAd.offer.type === `house`) {
-    ad.querySelector(`.popup__type`).textContent = window.data.TYPES_MAP.HOUSE;
+    ad.querySelector(`.popup__type`).textContent = HOUSE;
   } else {
-    ad.querySelector(`.popup__type`).textContent = window.data.TYPES_MAP.BUNGALO;
+    ad.querySelector(`.popup__type`).textContent = BUNGALO;
   }
   ad.querySelector(`.popup__text--capacity`).textContent = `${dataAd.offer.rooms} комнаты для ${dataAd.offer.guests} гостей`;
   ad.querySelector(`.popup__text--time`).textContent = `Заезд после ${dataAd.offer.checkin}, выезд до ${dataAd.offer.checkout}`;
@@ -140,16 +149,16 @@ const createAd = (dataAd) => {
 
 const getMainPinDefaultCoords = () => {
   return {
-    x: window.data.DEFAULT_MAIN_PIN_X,
-    y: window.data.DEFAULT_MAIN_PIN_Y
+    x: DEFAULT_MAIN_PIN_X,
+    y: DEFAULT_MAIN_PIN_Y
   };
 };
 
 window.map = {
-  getMainPinDefaultCoords: getMainPinDefaultCoords,
-  removePins: removePins,
-  removeMapCard: removeMapCard,
-  activate: activateMap,
-  deactivate: deactivateMap,
-  renderPinsMarkup: window.renderPinsMarkup
+  getMainPinDefaultCoords,
+  removePins,
+  removeMapCard,
+  activateMap,
+  deactivateMap,
+  renderPinsMarkup
 };

@@ -1,13 +1,20 @@
 'use strict';
 
-const avatarPreview = window.util.monipulateElementDOM('.ad-form-header__preview img');
-const imagesContainer = window.util.monipulateElementDOM('.ad-form__upload');
-const avatarChooser = window.util.monipulateElementDOM('#avatar');
-const imageChooser = window.util.monipulateElementDOM('#images');
+const avatarPreview = document.querySelector(`.ad-form-header__preview img`);
+const imagesContainer = document.querySelector(`.ad-form__upload`);
+const avatarChooser = document.querySelector(`#avatar`);
+const imageChooser = document.querySelector(`#images`);
+const DEFAULT_AVATAR = `img/muffin-grey.svg`;
+const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
 
+const ImageParams = {
+  WIDTH: `70px`,
+  HEIGHT: `70px`,
+  BORDER_RADIUS: `5px`
+};
 
 const filtrationByCorrectType = (file) => {
-  return window.data.FILE_TYPES.some((it) => {
+  return FILE_TYPES.some((it) => {
     return file.name.toLowerCase().endsWith(it);
   });
 };
@@ -17,28 +24,29 @@ const changeAvatar = (src) => {
 };
 
 const removeEmptyImgWrap = () => {
-  let emptyImgWrap = window.util.monipulateElementDOM(`.ad-form__photo--empty`);
+  let emptyImgWrap = document.querySelector(`.ad-form__photo--empty`);
   if (emptyImgWrap) {
     emptyImgWrap.remove();
   }
 };
 
 const addImages = (src) => {
+  let {WIDTH, HEIGHT, BORDER_RADIUS} = ImageParams;
   let newImageWrap = document.createElement(`div`);
   let image = document.createElement(`img`);
   newImageWrap.classList.add(`ad-form__photo`);
   newImageWrap.classList.add(`ad-form__photo--added`);
   image.src = src;
-  image.style.width = window.data.IMAGE_PARAMS.WIDTH;
-  image.style.height = window.data.IMAGE_PARAMS.HEIGHT;
-  image.style.borderRadius = window.data.IMAGE_PARAMS.BORDER_RADIUS;
+  image.style.width = WIDTH;
+  image.style.height = HEIGHT;
+  image.style.borderRadius = BORDER_RADIUS;
   newImageWrap.appendChild(image);
   imagesContainer.appendChild(newImageWrap);
   removeEmptyImgWrap();
 };
 
 const addEmptyImgWrap = () => {
-  if (!window.util.monipulateElementDOM(`.ad-form__photo--empty`)) {
+  if (!document.querySelector(`.ad-form__photo--empty`)) {
     let emptyImgWrap = document.createElement(`div`);
     emptyImgWrap.classList.add(`ad-form__photo`);
     emptyImgWrap.classList.add(`ad-form__photo--empty`);
@@ -60,23 +68,19 @@ const loadFile = (chooser, func) => {
 };
 
 const removeImages = () => {
-  avatarPreview.src = window.data.DEFAULT_AVATAR;
+  avatarPreview.src = DEFAULT_AVATAR;
   let addedImages = document.querySelectorAll(`.ad-form__photo--added`);
   if (addedImages) {
-    addedImages.forEach(function (it) {
+    addedImages.forEach((it) => {
       it.remove();
     });
   }
   addEmptyImgWrap();
 };
 
-const onAvatarChange = (evt) => {
-  loadFile(evt.target, changeAvatar);
-};
+const onAvatarChange = (evt) => loadFile(evt.target, changeAvatar);
 
-const onPhotoChange = (evt) => {
-  loadFile(evt.target, addImages);
-};
+const onPhotoChange = (evt) => loadFile(evt.target, addImages);
 
 const activate = () => {
   avatarChooser.addEventListener(`change`, onAvatarChange);
@@ -89,7 +93,7 @@ const deactivate = () => {
 };
 
 window.loadImage = {
-  activate: activate,
-  deactivate: deactivate,
-  remove: removeImages
+  activate,
+  deactivate,
+  removeImages
 };

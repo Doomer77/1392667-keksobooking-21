@@ -1,39 +1,45 @@
 'use strict';
 
-const mapPinMain = window.util.monipulateElementDOM(`.map__pin--main`);
-const adForm = window.util.monipulateElementDOM(`.ad-form`);
+const adForm = document.querySelector(`.ad-form`);
 const adFormFieldsets = adForm.querySelectorAll(`.ad-form__element`);
 const adFormHeader = adForm.querySelector(`.ad-form-header`);
 const addressInput = adForm.querySelector(`#address`);
-const typeInput = window.util.monipulateElementDOM(`#type`);
-const priceInput = window.util.monipulateElementDOM(`#price`);
-const timeInInput = window.util.monipulateElementDOM(`#timein`);
-const timeOutInput = window.util.monipulateElementDOM(`#timeout`);
-const roomNumberSelect = window.util.monipulateElementDOM(`#room_number`);
-const capacitySelect = window.util.monipulateElementDOM(`#capacity`);
-const submitBtn = window.util.monipulateElementDOM(`.ad-form__submit`);
-const main = window.util.monipulateElementDOM(`main`);
-const successTemplate = window.util.monipulateElementDOM(`#success`);
+const typeInput = document.querySelector(`#type`);
+const priceInput = document.querySelector(`#price`);
+const timeInInput = document.querySelector(`#timein`);
+const timeOutInput = document.querySelector(`#timeout`);
+const roomNumberSelect = document.querySelector(`#room_number`);
+const capacitySelect = document.querySelector(`#capacity`);
+const submitBtn = document.querySelector(`.ad-form__submit`);
+const main = document.querySelector(`main`);
+const successTemplate = document.querySelector(`#success`);
 const successMassege = successTemplate.content.querySelector(`.success`);
-const errorTemplate = window.util.monipulateElementDOM(`#error`);
+const errorTemplate = document.querySelector(`#error`);
 const errorsMassege = errorTemplate.content.querySelector(`.error`);
 const errorsBtn = errorTemplate.content.querySelector(`.error__button`);
-const resetBtn = window.util.monipulateElementDOM(`.ad-form__reset`);
+const resetBtn = document.querySelector(`.ad-form__reset`);
+const RoomsCount = {
+  1: [1],
+  2: [1, 2],
+  3: [1, 2, 3],
+  100: [0]
+};
+
 
 const getStartingCoordMapPinMain = () => {
-  addressInput.value = `${(mapPinMain.offsetTop - mapPinMain.offsetHeight / 2)}, ${(mapPinMain.offsetLeft - mapPinMain.offsetWidth / 2)}`;
+  addressInput.value = `${Math.floor(window.util.mapPinMain.offsetLeft) - Math.floor(window.util.mapPinMain.offsetWidth / 2)}, ${Math.floor(window.util.mapPinMain.offsetTop) - Math.floor(window.util.mapPinMain.offsetHeight / 2)}`;
 };
 getStartingCoordMapPinMain();
 
 const getBaseCoordinatesMapPinMain = () => {
   let mapPinMainPosition = {
-    x: mapPinMain.offsetLeft + Math.floor(mapPinMain.offsetWidth / 2),
-    y: mapPinMain.offsetTop + mapPinMain.offsetHeight
+    x: window.util.mapPinMain.offsetLeft + Math.floor(window.util.PIN_SICE.WIDTH / 2),
+    y: window.util.mapPinMain.offsetTop + window.util.PIN_SICE.HEIGHT
   };
   return mapPinMainPosition;
 };
 
-window.fillAddress = () => {
+const fillAddress = () => {
   let addressInputCoords = getBaseCoordinatesMapPinMain();
   addressInput.value = `${addressInputCoords.x} ${addressInputCoords.y}`;
 };
@@ -44,15 +50,16 @@ const activateForm = () => {
     adFormFieldsets[i].disabled = false;
   }
   adFormHeader.disabled = false;
-  window.fillAddress();
+  adForm.disabled = false;
+  fillAddress();
   window.loadImage.activate();
 };
 
-mapPinMain.addEventListener(`keydown`, (evt) => {
+window.util.mapPinMain.addEventListener(`keydown`, (evt) => {
   if (evt.key === window.util.KEY_NAME.ENTER) {
-    window.map.activate();
-    window.form.activate();
-    window.fillAddress();
+    window.map.activateMap();
+    window.form.activateForm();
+    fillAddress();
   }
 });
 
@@ -62,11 +69,12 @@ const deactivationForm = () => {
     adFormFieldsets[i].disabled = true;
   }
   adFormHeader.disabled = true;
-  var defaultCoords = window.map.getMainPinDefaultCoords();
+  adForm.disabled = true;
+  let defaultCoords = window.map.getMainPinDefaultCoords();
   getStartingCoordMapPinMain(defaultCoords);
   adForm.classList.add(`ad-form--disabled`);
   window.loadImage.deactivate();
-  window.loadImage.remove();
+  window.loadImage.removeImages();
 };
 deactivationForm();
 
@@ -99,21 +107,14 @@ timeOutInput.addEventListener(`change`, (evt) => {
   timeInInput.value = evt.target.value;
 });
 
-const ROOMS_COUNT = {
-  1: [1],
-  2: [1, 2],
-  3: [1, 2, 3],
-  100: [0]
-};
-
 const disableСapacityOptions = (inputValue) => {
   let capacityOptions = capacitySelect.querySelectorAll(`option`);
   for (let t = 0; t < capacityOptions.length; t++) {
     capacityOptions[t].disabled = true;
   }
-  for (let r = 0; r < ROOMS_COUNT[inputValue].length; r++) {
-    capacitySelect.querySelector(`${`option`}${`[value="`}${ROOMS_COUNT[inputValue][r]}${`"]`}`).disabled = false;
-    capacitySelect.value = ROOMS_COUNT[inputValue][r];
+  for (let r = 0; r < RoomsCount[inputValue].length; r++) {
+    capacitySelect.querySelector(`${`option`}${`[value="`}${RoomsCount[inputValue][r]}${`"]`}`).disabled = false;
+    capacitySelect.value = RoomsCount[inputValue][r];
   }
 };
 
@@ -134,7 +135,7 @@ submitBtn.addEventListener(`click`, () => {
 });
 
 const checkPlaceValidity = () => {
-  let roomGuests = ROOMS_COUNT[roomNumberSelect.value];
+  let roomGuests = RoomsCount[roomNumberSelect.value];
   if (roomGuests.indexOf(+capacitySelect.value) === -1) {
     capacitySelect.setCustomValidity(`Количество гостей не влезут в выбранную комнату`);
   } else {
@@ -171,9 +172,9 @@ const showErrorMassege = () => {
 
 const onSubmitSuccess = () => {
   showSuccessMassege();
-  window.map.deactivate();
-  window.form.deactivate();
-  window.filter.deactivate();
+  window.map.deactivateMap();
+  window.form.deactivationForm();
+  window.filter.deactivateFiltration();
 };
 
 adForm.addEventListener(`submit`, (evt) => {
@@ -182,15 +183,19 @@ adForm.addEventListener(`submit`, (evt) => {
   window.backend.upload(onSubmitSuccess, showErrorMassege, formData);
 });
 
-resetBtn.addEventListener(`click`, function () {
+resetBtn.addEventListener(`click`, () => {
   window.map.deactivate();
-  window.form.deactivate();
-  window.filter.deactivate();
-  window.loadImage.remove();
+  window.form.deactivationForm();
+  window.filter.deactivateFiltration();
+  window.loadImage.removeImages();
 });
 
 window.form = {
-  setAddress: window.fillAddress,
-  activate: activateForm,
-  deactivate: deactivationForm
+  activateForm,
+  deactivationForm
 };
+
+window.address = {
+  fillAddress
+};
+
