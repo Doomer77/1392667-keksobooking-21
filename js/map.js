@@ -49,7 +49,7 @@ window.util.mapPinMain.addEventListener(`mousedown`, (evt) => {
       x: mapPinMainPosition.x + Math.ceil(window.util.PIN_SICE.WIDTH / 2),
       y: mapPinMainPosition.y + window.util.PIN_SICE.HEIGHT + TAIL_HEIGHT
     };
-    window.address.fillAddress(pinTailCoords);
+    window.form.fillAddress(pinTailCoords);
   };
   const onMouseUp = (upEvt) => {
     upEvt.preventDefault();

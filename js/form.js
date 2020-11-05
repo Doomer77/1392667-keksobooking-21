@@ -191,10 +191,6 @@ resetBtn.addEventListener(`click`, () => {
 window.form = {
   activateForm,
   deactivationForm,
-  getStartingCoordMapPinMain
-};
-
-window.address = {
+  getStartingCoordMapPinMain,
   fillAddress
 };
-
